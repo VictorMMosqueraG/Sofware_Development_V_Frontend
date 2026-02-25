@@ -1,0 +1,97 @@
+<form [formGroup]="form"
+      (ngSubmit)="save()"
+      class="form-layout">
+
+  <div class="form-main">
+
+    <div class="card">
+      <h2>Información General</h2>
+
+      <div class="grid-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Número</mat-label>
+          <input matInput type="number" formControlName="numero">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cliente</mat-label>
+          <input matInput formControlName="cliente">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option value="Activo">Activo</mat-option>
+            <mat-option value="Anulado">Anulado</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="card" formArrayName="detalles">
+      <div class="card-header">
+        <h2>Detalle</h2>
+        <button type="button"
+                mat-stroked-button
+                (click)="addDetails()">
+          + Agregar Ítem
+        </button>
+      </div>
+
+      <div class="detalle-row header">
+        <div>Descripción</div>
+        <div>Precio</div>
+        <div>Cantidad</div>
+        <div>Subtotal</div>
+        <div></div>
+      </div>
+
+      <div *ngFor="let item of details.controls; let i = index"
+           [formGroupName]="i"
+           class="detalle-row">
+
+        <input matInput formControlName="descripcion">
+
+        <input matInput type="number"
+               formControlName="precio"
+               (input)="calculateSubtotal(i)">
+
+        <input matInput type="number"
+               formControlName="cantidad"
+               (input)="calculateSubtotal(i)">
+
+        <div class="subtotal">
+          {{ item.get('subtotal')?.value | currency:'COP' }}
+        </div>
+
+        <button type="button"
+                mat-icon-button
+                color="warn"
+                (click)="deleteDetails(i)">
+          🗑️
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="form-sidebar">
+    <div class="card resumen">
+      <h3>Resumen</h3>
+
+      <div class="total-line">
+        <span>Total</span>
+        <strong>{{ total | currency:'COP' }}</strong>
+      </div>
+
+      <button type="submit"
+              mat-raised-button
+              color="primary"
+              class="save-btn">
+        Guardar Recibo
+      </button>
+    </div>
+  </div>
+
+</form>

@@ -1,0 +1,86 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Recibos de Caja</h1>
+      <p class="subtitle">Gestión y control de recibos registrados</p>
+    </div>
+
+    <button mat-raised-button color="primary" routerLink="/recibos/nuevo">
+      + Nuevo Recibo
+    </button>
+  </div>
+
+  <!-- Card -->
+  <div class="table-card">
+
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Fecha</th>
+          <th class="text-right">Total</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let recibo of recibos$ | async">
+
+          <td class="number">
+            #{{ recibo.numero }}
+          </td>
+
+          <td class="cliente">
+            {{ recibo.cliente }}
+          </td>
+
+          <td>
+            {{ recibo.fecha | date:'mediumDate' }}
+          </td>
+
+          <td class="text-right total">
+            {{ recibo.total | currency:'COP' }}
+          </td>
+
+          <td>
+            <span class="badge"
+                  [ngClass]="{
+                    'badge-success': recibo.estado === 'Activo',
+                    'badge-danger': recibo.estado === 'Anulado'
+                  }">
+              {{ recibo.estado }}
+            </span>
+          </td>
+
+          <td class="actions">
+            <button mat-icon-button
+                    color="primary"
+                    [routerLink]="['/recibos/editar', recibo.id]">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button
+                    color="warn"
+                    (click)="remove(recibo.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="(recibos$ | async)?.length === 0">
+          <td colspan="6" class="empty">
+            No hay recibos registrados
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

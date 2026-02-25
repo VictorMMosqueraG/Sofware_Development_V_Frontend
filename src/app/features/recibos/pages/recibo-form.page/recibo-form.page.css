@@ -1,0 +1,132 @@
+.form-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  padding: 40px;
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border: 1px solid #fed7aa;
+}
+
+.card h2 {
+  margin: 0 0 20px 0;
+  color: #7f1d1d;
+  font-weight: 700;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.detalle-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 60px;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.detalle-row:not(.header):hover {
+  background: #fff1e6;
+}
+
+.detalle-row.header {
+  font-weight: 600;
+  font-size: 13px;
+  color: #9a3412;
+  background: #ffedd5;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.subtotal {
+  font-weight: 700;
+  color: #c2410c;
+}
+
+.form-sidebar .resumen {
+  position: sticky;
+  top: 40px;
+  background: linear-gradient(180deg, #7f1d1d, #5b1111);
+  color: #fff7ed;
+  border: none;
+}
+
+.resumen h3 {
+  margin-top: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 28px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.total-line strong {
+  color: #fed7aa;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #c2410c, #ea580c);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+button[mat-stroked-button] {
+  border-color: #c2410c;
+  color: #c2410c;
+  font-weight: 600;
+}
+
+button[mat-stroked-button]:hover {
+  background: #fff1e6;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #c2410c !important;
+}
+
+@media (max-width: 1024px) {
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-sidebar {
+    order: -1;
+  }
+}
