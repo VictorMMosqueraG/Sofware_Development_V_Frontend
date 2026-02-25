@@ -1,0 +1,21 @@
+<div class="dialog-container">
+
+  <div class="icon-wrapper">
+    <mat-icon>{{ data.icon || 'check_circle' }}</mat-icon>
+  </div>
+
+  <h2 class="title">{{ data.title }}</h2>
+
+  <div class="message">
+    {{ data.message }}
+  </div>
+
+  <div class="actions" style="width: 100%;">
+    <button mat-flat-button
+            color="primary"
+            class="btn-action"
+            mat-dialog-close>
+      Entendido
+    </button>
+  </div>
+</div>

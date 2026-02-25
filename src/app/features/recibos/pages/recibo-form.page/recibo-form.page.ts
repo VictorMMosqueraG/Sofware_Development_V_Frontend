@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { SuccessDialog } from '../../../../shared/components/success-dialog/success-dialog';
 
 @Component({
   selector: 'app-recibo-form.page',
@@ -32,6 +34,7 @@ export class ReciboFormPage implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private service = inject(ReciboCajaService);
+  private dialog = inject(MatDialog);
 
   editingId: number | null = null;
 
@@ -126,10 +129,31 @@ export class ReciboFormPage implements OnInit {
 
     if (this.editingId) {
       this.service.update(this.editingId, reciboData);
-    } else {
-      this.service.create(reciboData);
-    }
 
-    this.router.navigate(['/recibos']);
+      this.dialog.open(SuccessDialog, {
+        data: {
+          title: 'Actualización exitosa',
+          message: 'El recibo fue actualizado correctamente.',
+          icon: 'check_circle'
+        }
+      }).afterClosed().subscribe(() => {
+        this.router.navigate(['/recibos']);
+      });
+
+    } else {
+
+      this.service.create(reciboData);
+
+      this.dialog.open(SuccessDialog, {
+        data: {
+          title: 'Registro exitoso',
+          message: 'El recibo fue creado correctamente.',
+          icon: 'check_circle'
+        }
+      }).afterClosed().subscribe(() => {
+        this.router.navigate(['/recibos']);
+      });
+
+    }
   }
 }
