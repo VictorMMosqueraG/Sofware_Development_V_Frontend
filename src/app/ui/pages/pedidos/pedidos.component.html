@@ -1,0 +1,112 @@
+<div class="pedidos-container">
+  <header class="header">
+    <h1>🍽️ Sistema de Pedidos</h1>
+    <p class="subtitle">Restaurante</p>
+  </header>
+
+  <!-- Vista de Mesas -->
+  @if (!mesaSeleccionada()) {
+    <section class="mesas-section">
+      <h2>Selecciona una Mesa</h2>
+      <div class="mesas-grid">
+        @for (mesa of mesas(); track mesa.id) {
+          <div 
+            class="mesa-card" 
+            [class.ocupada]="mesa.ocupada"
+            (click)="seleccionarMesa(mesa)">
+            <span class="mesa-icon">🪑</span>
+            <span class="mesa-numero">Mesa {{ mesa.numero }}</span>
+            <span class="mesa-estado">{{ mesa.ocupada ? 'Ocupada' : 'Disponible' }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Vista de Pedido -->
+  @if (mesaSeleccionada()) {
+    <div class="pedido-view">
+      <button class="btn-volver" (click)="volverAMesas()">
+        ← Volver a Mesas
+      </button>
+      
+      <div class="mesa-info">
+        <h2>Mesa {{ mesaSeleccionada()?.numero }}</h2>
+      </div>
+
+      <div class="pedido-content">
+        <!-- Panel del Menú -->
+        <div class="menu-panel">
+          <h3>Menú</h3>
+          
+          <div class="categorias-tabs">
+            @for (categoria of categorias; track categoria) {
+              <button 
+                class="tab-btn"
+                [class.active]="categoriaActiva() === categoria"
+                (click)="seleccionarCategoria(categoria)">
+                {{ categoria }}
+              </button>
+            }
+          </div>
+
+          <div class="productos-grid">
+            @for (producto of productosFiltrados(); track producto.id) {
+              <div class="producto-card" (click)="agregarProducto(producto)">
+                <div class="producto-info">
+                  <span class="producto-nombre">{{ producto.nombre }}</span>
+                  <span class="producto-precio">{{ formatearPrecio(producto.precio) }}</span>
+                </div>
+                <button class="btn-agregar">+</button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Panel del Pedido -->
+        <div class="pedido-panel">
+          <h3>Pedido Actual</h3>
+          
+          @if (itemsPedido().length === 0) {
+            <div class="pedido-vacio">
+              <span class="icon-vacio">🛒</span>
+              <p>No hay productos en el pedido</p>
+              <p class="hint">Selecciona productos del menú</p>
+            </div>
+          } @else {
+            <div class="items-list">
+              @for (item of itemsPedido(); track item.id) {
+                <div class="item-pedido">
+                  <div class="item-info">
+                    <span class="item-nombre">{{ item.producto.nombre }}</span>
+                    <span class="item-precio">{{ formatearPrecio(item.producto.precio * item.cantidad) }}</span>
+                  </div>
+                  <div class="item-acciones">
+                    <button class="btn-cantidad" (click)="decrementarCantidad(item.id)">-</button>
+                    <span class="cantidad">{{ item.cantidad }}</span>
+                    <button class="btn-cantidad" (click)="incrementarCantidad(item.id)">+</button>
+                    <button class="btn-eliminar" (click)="eliminarItem(item.id)">🗑️</button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="pedido-total">
+              <span>Total:</span>
+              <span class="total-precio">{{ formatearPrecio(total()) }}</span>
+            </div>
+
+            <div class="pedido-acciones">
+              <button class="btn-cancelar" (click)="cancelarPedido()">
+                Cancelar
+              </button>
+              <button class="btn-enviar" (click)="enviarPedido()">
+                Enviar Pedido
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

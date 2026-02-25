@@ -1,0 +1,439 @@
+.pedidos-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #fff;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+  color: #a0a0a0;
+  margin-top: 5px;
+}
+
+/* Sección de Mesas */
+.mesas-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mesas-section h2 {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.mesa-card {
+  background: linear-gradient(145deg, #2d2d44, #252538);
+  border-radius: 16px;
+  padding: 25px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mesa-card:hover {
+  transform: translateY(-5px);
+  border-color: #4a9eff;
+  box-shadow: 0 10px 30px rgba(74, 158, 255, 0.2);
+}
+
+.mesa-card.ocupada {
+  background: linear-gradient(145deg, #3d2d2d, #382525);
+  border-color: #ff6b6b;
+}
+
+.mesa-card.ocupada:hover {
+  border-color: #ff8585;
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+}
+
+.mesa-icon {
+  font-size: 2.5rem;
+}
+
+.mesa-numero {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.mesa-estado {
+  font-size: 0.85rem;
+  color: #4ade80;
+  padding: 4px 12px;
+  background: rgba(74, 222, 128, 0.15);
+  border-radius: 20px;
+}
+
+.mesa-card.ocupada .mesa-estado {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.15);
+}
+
+/* Vista de Pedido */
+.pedido-view {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.btn-volver {
+  background: transparent;
+  border: 1px solid #4a9eff;
+  color: #4a9eff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.btn-volver:hover {
+  background: #4a9eff;
+  color: #fff;
+}
+
+.mesa-info h2 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.pedido-content {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 25px;
+}
+
+/* Panel del Menú */
+.menu-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.menu-panel h3 {
+  color: #fff;
+  margin: 0 0 20px 0;
+}
+
+.categorias-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #a0a0a0;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #4a9eff, #3d7bd9);
+  color: #fff;
+}
+
+.productos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.producto-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.producto-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.producto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.producto-nombre {
+  color: #fff;
+  font-weight: 500;
+}
+
+.producto-precio {
+  color: #4ade80;
+  font-size: 0.9rem;
+}
+
+.btn-agregar {
+  background: linear-gradient(135deg, #4a9eff, #3d7bd9);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-agregar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(74, 158, 255, 0.4);
+}
+
+/* Panel del Pedido */
+.pedido-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.pedido-panel h3 {
+  color: #fff;
+  margin: 0 0 20px 0;
+}
+
+.pedido-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  color: #a0a0a0;
+}
+
+.icon-vacio {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.pedido-vacio .hint {
+  font-size: 0.85rem;
+  margin-top: 5px;
+  color: #707070;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.item-pedido {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 15px;
+}
+
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.item-nombre {
+  color: #fff;
+  font-weight: 500;
+}
+
+.item-precio {
+  color: #4ade80;
+}
+
+.item-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-cantidad {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-cantidad:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.cantidad {
+  color: #fff;
+  font-weight: 600;
+  min-width: 25px;
+  text-align: center;
+}
+
+.btn-eliminar {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: auto;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.btn-eliminar:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.pedido-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.total-precio {
+  color: #4ade80;
+}
+
+.pedido-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-cancelar {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 14px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.btn-enviar {
+  flex: 2;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  border: none;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-enviar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(74, 222, 128, 0.35);
+}
+
+/* Scrollbar personalizado */
+.productos-grid::-webkit-scrollbar,
+.items-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.productos-grid::-webkit-scrollbar-track,
+.items-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.productos-grid::-webkit-scrollbar-thumb,
+.items-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .pedido-content {
+    grid-template-columns: 1fr;
+  }
+
+  .pedido-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 500px) {
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .mesas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .categorias-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 10px;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+  }
+}
