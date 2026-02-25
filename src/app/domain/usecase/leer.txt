@@ -1,0 +1,5 @@
+En este directorio deben implementarse los casos de uso (application services).
+ Cada caso de uso orquesta la lógica de negocio utilizando los modelos y entidades del dominio. 
+ Aquí se define QUÉ hace la aplicación, coordinando entidades y servicios,
+  pero sin detalles de frameworks ni infraestructura.
+   Los casos de uso exponen métodos claros para ser usados por la capa de presentación o infraestructura.

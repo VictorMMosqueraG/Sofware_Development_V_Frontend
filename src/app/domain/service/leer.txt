@@ -1,0 +1,5 @@
+En este directorio se deben ubicar los servicios de dominio.
+ Los servicios encapsulan lógica de negocio que no pertenece a una sola entidad o modelo,
+  sino que involucra reglas o procesos que afectan a varias entidades. 
+  Aquí se definen interfaces y clases que representan operaciones del dominio,
+   manteniendo la lógica de negocio centralizada y reutilizable, siguiendo los principios de arquitectura limpia.

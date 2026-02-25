@@ -1,0 +1,5 @@
+En este directorio se implementan los adaptadores de infraestructura (driven adapters), 
+como servicios de acceso a datos, conexiones a APIs externas, almacenamiento, etc.
+ Aquí se realiza la implementación concreta de interfaces definidas en el dominio o casos de uso.
+  Cada módulo debe encargarse de un tipo de integración (por ejemplo, API REST, base de datos, etc.),
+  siguiendo los principios de arquitectura limpia.
