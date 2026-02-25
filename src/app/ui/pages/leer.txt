@@ -1,0 +1,5 @@
+
+En este directorio se organizan las vistas (pages) de la aplicación. 
+Cada subcarpeta representa una página o sección principal de la interfaz de usuario.
+ Aquí se implementa la lógica de presentación y se conectan los casos de uso para mostrar datos al usuario.
+  La página principal debe actuar como contenedor general, siguiendo la separación de responsabilidades de arquitectura limpia.

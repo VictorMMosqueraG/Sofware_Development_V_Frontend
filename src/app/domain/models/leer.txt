@@ -1,0 +1,5 @@
+En este directorio deben ubicarse los modelos de dominio. 
+Cada modelo representa una entidad central del negocio y define sus atributos y comportamientos.
+ Los modelos aquí NO deben tener dependencias de frameworks ni detalles de infraestructura,
+  solo lógica de negocio pura. Estos modelos se usan para transferir datos entre las capas
+   de la aplicación siguiendo los principios de arquitectura limpia.
