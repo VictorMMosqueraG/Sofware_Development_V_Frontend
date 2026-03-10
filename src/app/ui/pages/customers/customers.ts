@@ -1,0 +1,135 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CreateCustomerRequest, Customer, CustomerSearchQuery, UpdateCustomerRequest } from '../../../domain/models';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CustomerUseCase } from '../../../domain/usecase/customers/customer.usecase';
+import { CommonModule, DatePipe } from '@angular/common';
+
+type ModalMode = 'create' | 'edit' | 'delete' | null;
+
+@Component({
+  selector: 'app-customers',
+  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  templateUrl: './customers.html',
+  styleUrl: './customers.css',
+})
+export class Customers implements OnInit {
+
+  customers: Customer[] = [];
+  totalRecords = 0;
+  currentPage = 1;
+  pageSize = 10;
+  loading = signal(false);
+  modalMode = signal<ModalMode>(null);
+  selectedCustomer = signal<Customer | null>(null);
+  filterEstado = '';
+  filterTipoDoc = '';
+
+  form: FormGroup;
+
+  constructor(
+    private customerUseCase: CustomerUseCase,
+    private fb: FormBuilder
+  ) {
+    this.form = this.fb.group({
+      cliNombre: ['', [Validators.required, Validators.maxLength(60)]],
+      cliApellidos: ['', [Validators.required, Validators.maxLength(60)]],
+      cliTipoDocumento: ['CC', Validators.required],
+      cliNumDocumento: ['', [Validators.required, Validators.maxLength(30)]],
+      cliDireccion: ['', Validators.maxLength(100)],
+      cliTelefono: ['', Validators.maxLength(20)],
+      cliCorreo: ['', [Validators.email, Validators.maxLength(100)]],
+      cliEstado: ['ACTIVO', Validators.required],
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
+
+  loadCustomers(): void {
+    this.loading.set(true);
+    const query: CustomerSearchQuery = {
+      pagination: { page: this.currentPage, pageSize: this.pageSize, sort: 'cliId', order: 'asc' },
+      ...(this.filterEstado && { cliEstado: this.filterEstado }),
+      ...(this.filterTipoDoc && { cliTipoDocumento: this.filterTipoDoc }),
+    };
+    this.customerUseCase.getAll(query).subscribe({
+      next: (res) => {
+        this.customers = res?.results ?? [];
+        this.totalRecords = res?.total ?? 0;
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  onFilterChange(field: string, event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (field === 'cliEstado') this.filterEstado = value;
+    if (field === 'cliTipoDocumento') this.filterTipoDoc = value;
+    this.currentPage = 1;
+    this.loadCustomers();
+  }
+
+  openCreate(): void {
+    this.form.reset({ cliTipoDocumento: 'CC', cliEstado: 'ACTIVO' });
+    this.selectedCustomer.set(null);
+    this.modalMode.set('create');
+  }
+
+  openEdit(customer: Customer): void {
+    this.selectedCustomer.set(customer);
+    this.form.patchValue(customer);
+    this.modalMode.set('edit');
+  }
+
+  openDelete(customer: Customer): void {
+    this.selectedCustomer.set(customer);
+    this.modalMode.set('delete');
+  }
+
+  closeModal(): void {
+    this.modalMode.set(null);
+    this.selectedCustomer.set(null);
+    this.form.reset();
+  }
+
+  submitForm(): void {
+    if (this.form.invalid) return;
+
+    if (this.modalMode() === 'create') {
+      const request: CreateCustomerRequest = this.form.value;
+      this.customerUseCase.create(request).subscribe({
+        next: () => { this.closeModal(); this.loadCustomers(); },
+      });
+    } else if (this.modalMode() === 'edit' && this.selectedCustomer()) {
+      const request: UpdateCustomerRequest = this.form.value;
+      this.customerUseCase.update(this.selectedCustomer()!.cliId, request).subscribe({
+        next: () => { this.closeModal(); this.loadCustomers(); },
+      });
+    }
+  }
+
+  confirmDelete(): void {
+    if (!this.selectedCustomer()) return;
+    this.customerUseCase.delete(this.selectedCustomer()!.cliId).subscribe({
+      next: () => { this.closeModal(); this.loadCustomers(); },
+    });
+  }
+
+  getInitials(c: Customer): string {
+    return `${c.cliNombre?.[0] ?? ''}${c.cliApellidos?.[0] ?? ''}`.toUpperCase();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalRecords / this.pageSize);
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) { this.currentPage--; this.loadCustomers(); }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) { this.currentPage++; this.loadCustomers(); }
+  }
+}
