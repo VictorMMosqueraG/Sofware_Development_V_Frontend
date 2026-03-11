@@ -1,0 +1,98 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.navbar {
+  width: 100%;
+  background: #131008;
+  border-bottom: 1px solid #2e2720;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  height: 60px;
+  font-family: 'DM Sans', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 40px;
+}
+
+.brand-icon {
+  font-size: 20px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0e8db;
+}
+
+.brand-sub {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #c9a55a;
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #7a6e62;
+  font-size: 13px;
+  transition: all 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.nav-link:hover {
+  color: #f0e8db;
+  background: rgba(201, 165, 90, 0.1);
+  border-color: rgba(201, 165, 90, 0.15);
+}
+
+.nav-link.active {
+  color: #c9a55a;
+  background: rgba(201, 165, 90, 0.1);
+  border-color: rgba(201, 165, 90, 0.25);
+  font-weight: 500;
+}
+
+.nav-icon {
+  font-size: 14px;
+}
+
+.nav-footer {
+  margin-left: auto;
+  font-size: 11px;
+  color: #7a6e62;
+  letter-spacing: 0.08em;
+}
