@@ -1,0 +1,9 @@
+export interface CreateCashReceiptRequest {
+  usuId:         number;
+  rcFecha:       string;
+  pedId:         number;
+  cliId:         number;
+  rcTotal:       number;
+  rcObservacion: string;
+  rcEstado:      'ACTIVO' | 'INACTIVO' | 'ANULADO';
+}
