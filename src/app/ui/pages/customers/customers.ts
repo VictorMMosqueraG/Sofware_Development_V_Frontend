@@ -21,6 +21,7 @@ export class Customers implements OnInit {
   loading = signal(false);
   modalMode = signal<ModalMode>(null);
   selectedCustomer = signal<Customer | null>(null);
+  modalErrorMessage = signal<string | null>(null);
   filterEstado = '';
   filterTipoDoc = '';
 
@@ -92,28 +93,34 @@ export class Customers implements OnInit {
     this.modalMode.set(null);
     this.selectedCustomer.set(null);
     this.form.reset();
+    this.modalErrorMessage.set(null);
   }
 
   submitForm(): void {
     if (this.form.invalid) return;
 
+    this.modalErrorMessage.set(null);
     if (this.modalMode() === 'create') {
       const request: CreateCustomerRequest = this.form.value;
       this.customerUseCase.create(request).subscribe({
         next: () => { this.closeModal(); this.loadCustomers(); },
+        error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al crear cliente'),
       });
     } else if (this.modalMode() === 'edit' && this.selectedCustomer()) {
       const request: UpdateCustomerRequest = this.form.value;
       this.customerUseCase.update(this.selectedCustomer()!.cliId, request).subscribe({
         next: () => { this.closeModal(); this.loadCustomers(); },
+        error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al actualizar cliente'),
       });
     }
   }
 
   confirmDelete(): void {
     if (!this.selectedCustomer()) return;
+    this.modalErrorMessage.set(null);
     this.customerUseCase.delete(this.selectedCustomer()!.cliId).subscribe({
       next: () => { this.closeModal(); this.loadCustomers(); },
+      error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al eliminar cliente'),
     });
   }
 

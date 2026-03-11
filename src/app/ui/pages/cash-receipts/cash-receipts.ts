@@ -24,6 +24,7 @@ export class CashReceipts implements OnInit {
   modalMode     = signal<ModalMode>(null);
   selected      = signal<CashReceipt | null>(null);
   errorMessage  = signal<string | null>(null);
+  modalErrorMessage = signal<string | null>(null);
   filterEstado  = '';
 
   form: FormGroup;
@@ -90,34 +91,34 @@ export class CashReceipts implements OnInit {
     this.modalMode.set(null);
     this.selected.set(null);
     this.form.reset();
+    this.modalErrorMessage.set(null);
   }
 
   submitForm(): void {
     if (this.form.invalid) return;
 
+    this.modalErrorMessage.set(null);
     if (this.modalMode() === 'create') {
       const request: CreateCashReceiptRequest = this.form.value;
       this.cashReceiptUseCase.create(request).subscribe({
         next: () => { this.closeModal(); this.loadReceipts(); },
-        error: (err) => this.errorMessage.set(err?.error?.detail ?? 'Error al crear recibo'),
+        error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al crear recibo'),
       });
     } else if (this.modalMode() === 'edit' && this.selected()) {
       const request: UpdateCashReceiptRequest = this.form.value;
       this.cashReceiptUseCase.update(this.selected()!.rcNum, request).subscribe({
         next: () => { this.closeModal(); this.loadReceipts(); },
-        error: (err) => this.errorMessage.set(err?.error?.detail ?? 'Error al actualizar recibo'),
+        error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al actualizar recibo'),
       });
     }
   }
 
   confirmDelete(): void {
     if (!this.selected()) return;
+    this.modalErrorMessage.set(null);
     this.cashReceiptUseCase.delete(this.selected()!.rcNum).subscribe({
       next: () => { this.closeModal(); this.loadReceipts(); },
-      error: (err) => {
-        this.closeModal();
-        this.errorMessage.set(err?.error?.detail ?? 'Error al eliminar recibo');
-      },
+      error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al eliminar recibo'),
     });
   }
 

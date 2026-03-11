@@ -131,6 +131,13 @@
         <button class="modal-close" (click)="closeModal()">✕</button>
       </div>
 
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          ⚠️ {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
       <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
 
         <div class="form-row">
@@ -215,6 +222,14 @@
         <h2>Eliminar Cliente</h2>
         <button class="modal-close" (click)="closeModal()">✕</button>
       </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          ⚠️ {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
       <div class="delete-body">
         <div class="delete-icon">🗑️</div>
         <p>¿Estás seguro que deseas eliminar a</p>
