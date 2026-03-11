@@ -1,0 +1,230 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestión de</span>
+      <h1 class="header-title">Clientes</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>＋</span> Nuevo Cliente
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange('cliEstado', $event)">
+        <option value="">Todos</option>
+        <option value="ACTIVO">Activo</option>
+        <option value="INACTIVO">Inactivo</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tipo Documento</label>
+      <select (change)="onFilterChange('cliTipoDocumento', $event)">
+        <option value="">Todos</option>
+        <option value="CC">CC</option>
+        <option value="NIT">NIT</option>
+        <option value="CE">CE</option>
+        <option value="Pasaporte">Pasaporte</option>
+      </select>
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">clientes</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando clientes...</span>
+      </div>
+    }
+
+    @if (!loading() && customers.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Documento</th>
+            <th>Contacto</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (customer of customers; track customer.cliId) {
+            <tr class="table-row">
+
+              <td class="td-id">{{ customer.cliId }}</td>
+
+              <td class="td-name">
+                <div class="avatar-cell">
+                  <div class="avatar">{{ getInitials(customer) }}</div>
+                  <div>
+                    <div class="name-main">{{ customer.cliNombre }} {{ customer.cliApellidos }}</div>
+                    <div class="name-sub">{{ customer.cliCorreo || '—' }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="td-doc">
+                <span class="doc-badge">{{ customer.cliTipoDocumento }}</span>
+                {{ customer.cliNumDocumento }}
+              </td>
+
+              <td class="td-contact">
+                <div>{{ customer.cliTelefono || '—' }}</div>
+                <div class="text-muted">{{ customer.cliDireccion || '—' }}</div>
+              </td>
+
+              <td>
+                <span class="status-badge"
+                  [class.active]="customer.cliEstado === 'ACTIVO'"
+                  [class.inactive]="customer.cliEstado === 'INACTIVO'">
+                  {{ customer.cliEstado }}
+                </span>
+              </td>
+
+              <td class="td-date">{{ customer.createdAt | date:'dd MMM yyyy' }}</td>
+
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(customer)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(customer)" title="Eliminar">✕</button>
+              </td>
+
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && customers.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🍽️</div>
+        <p>No se encontraron clientes</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Cliente' : 'Editar Cliente' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input formControlName="cliNombre" placeholder="Juan" />
+            @if (form.get('cliNombre')?.invalid && form.get('cliNombre')?.touched) {
+              <span class="field-error">Nombre requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input formControlName="cliApellidos" placeholder="Pérez García" />
+            @if (form.get('cliApellidos')?.invalid && form.get('cliApellidos')?.touched) {
+              <span class="field-error">Apellidos requeridos</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo Documento *</label>
+            <select formControlName="cliTipoDocumento">
+              <option value="CC">CC</option>
+              <option value="NIT">NIT</option>
+              <option value="CE">CE</option>
+              <option value="Pasaporte">Pasaporte</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Número Documento *</label>
+            <input formControlName="cliNumDocumento" placeholder="1234567890" />
+            @if (form.get('cliNumDocumento')?.invalid && form.get('cliNumDocumento')?.touched) {
+              <span class="field-error">Documento requerido</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input formControlName="cliTelefono" placeholder="3001234567" />
+          </div>
+          <div class="form-group">
+            <label>Correo</label>
+            <input formControlName="cliCorreo" placeholder="juan@email.com" />
+            @if (form.get('cliCorreo')?.errors?.['email'] && form.get('cliCorreo')?.touched) {
+              <span class="field-error">Correo inválido</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Dirección</label>
+          <input formControlName="cliDireccion" placeholder="Calle 10 # 5-20" />
+        </div>
+
+        <div class="form-group full">
+          <label>Estado *</label>
+          <select formControlName="cliEstado">
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Cliente' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Cliente</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>¿Estás seguro que deseas eliminar a</p>
+        <strong>{{ selectedCustomer()?.cliNombre }} {{ selectedCustomer()?.cliApellidos }}</strong>?
+        <p class="delete-warning">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
