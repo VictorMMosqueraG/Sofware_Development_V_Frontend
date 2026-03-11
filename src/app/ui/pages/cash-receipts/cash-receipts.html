@@ -46,8 +46,8 @@
           <tr>
             <th>#</th>
             <th>Fecha</th>
-            <th>Cliente ID</th>
-            <th>Usuario ID</th>
+            <th>Cliente</th>
+            <th>Usuario</th>
             <th>Pedido ID</th>
             <th>Total</th>
             <th>Observación</th>
@@ -60,8 +60,8 @@
             <tr class="table-row">
               <td class="td-id">{{ receipt.rcNum }}</td>
               <td class="td-date">{{ receipt.rcFecha | date:'dd MMM yyyy' }}</td>
-              <td>{{ receipt.cliId }}</td>
-              <td>{{ receipt.usuId }}</td>
+              <td>{{ receipt.clientName }}</td>
+              <td>{{ receipt.userName }}</td>
               <td>{{ receipt.pedId }}</td>
               <td class="td-total">$ {{ receipt.rcTotal | number:'1.2-2' }}</td>
               <td class="td-obs">{{ receipt.rcObservacion }}</td>
@@ -146,8 +146,13 @@
             }
           </div>
           <div class="form-group">
-            <label>Cliente ID *</label>
-            <input type="number" formControlName="cliId" placeholder="1" />
+            <label>Cliente *</label>
+            <select formControlName="cliId">
+              <option value="" disabled>Selecciona un cliente</option>
+              @for (customer of customers; track customer.cliId) {
+                <option [value]="customer.cliId">{{ customer.cliNombre }} {{ customer.cliApellidos }}</option>
+              }
+            </select>
             @if (form.get('cliId')?.invalid && form.get('cliId')?.touched) {
               <span class="field-error">Cliente requerido</span>
             }
