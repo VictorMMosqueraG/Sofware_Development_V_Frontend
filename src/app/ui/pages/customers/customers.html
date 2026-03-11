@@ -168,10 +168,10 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Número Documento *</label>
+            <label>Número Documento</label>
             <input formControlName="cliNumDocumento" placeholder="1234567890" />
             @if (form.get('cliNumDocumento')?.invalid && form.get('cliNumDocumento')?.touched) {
-              <span class="field-error">Documento requerido</span>
+              <span class="field-error">Formato inválido</span>
             }
           </div>
         </div>

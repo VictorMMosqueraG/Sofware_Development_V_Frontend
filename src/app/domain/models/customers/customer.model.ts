@@ -3,7 +3,7 @@ export interface Customer {
   cliNombre: string;
   cliApellidos: string;
   cliTipoDocumento: 'CC' | 'NIT' | 'CE' | 'Pasaporte';
-  cliNumDocumento: string;
+  cliNumDocumento?: string;
   cliDireccion?: string;
   cliTelefono?: string;
   cliCorreo?: string;

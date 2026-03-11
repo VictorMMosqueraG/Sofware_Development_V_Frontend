@@ -1,10 +1,8 @@
 export interface UpdateCustomerRequest {
-  cliNombre: string;
-  cliApellidos: string;
-  cliTipoDocumento: 'CC' | 'NIT' | 'CE' | 'Pasaporte';
-  cliNumDocumento: string;
-  cliDireccion?: string;
-  cliTelefono?: string;
-  cliCorreo?: string;
-  cliEstado: 'ACTIVO' | 'INACTIVO';
+  cliNombre?:        string;
+  cliApellidos?:     string;
+  cliTipoDocumento?: 'CC' | 'NIT' | 'CE' | 'Pasaporte';
+  cliDireccion?:     string;
+  cliTelefono?:      string;
+  cliEstado?:        'ACTIVO' | 'INACTIVO';
 }
