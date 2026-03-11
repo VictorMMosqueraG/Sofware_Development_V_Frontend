@@ -1,5 +1,5 @@
 export interface DataResultDto<T> {
-  data: T;
+  results: T;
   message: string;
-  success: boolean;
+  success?: boolean;
 }
