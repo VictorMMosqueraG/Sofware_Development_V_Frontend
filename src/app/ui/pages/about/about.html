@@ -1,0 +1,116 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Información del</span>
+      <h1 class="header-title">Agente &amp; Ayuda</h1>
+    </div>
+  </header>
+
+  <!-- Agent Capabilities section -->
+  <div class="about-card">
+    <h2 class="section-title">
+      <span class="section-icon">🤖</span> ¿Qué puede hacer el agente?
+    </h2>
+    <ul class="capability-list can-do">
+      <li>✅ Leer y modificar archivos dentro de este repositorio.</li>
+      <li>✅ Ejecutar comandos de compilación, pruebas y análisis en el entorno de desarrollo.</li>
+      <li>✅ Generar código, documentación y sugerencias de mejora.</li>
+      <li>✅ Analizar capturas de pantalla o registros (logs) que compartas en el chat.</li>
+    </ul>
+
+    <h2 class="section-title mt">
+      <span class="section-icon">🚫</span> ¿Qué NO puede hacer el agente?
+    </h2>
+    <ul class="capability-list cant-do">
+      <li>❌ Iniciar sesión en sistemas externos (portales bancarios, redes sociales, ERP, etc.).</li>
+      <li>❌ Usar tus contraseñas o tokens de autenticación.</li>
+      <li>❌ Acceder a datos fuera del repositorio o sandbox.</li>
+      <li>❌ Realizar acciones en tu nombre en sitios web.</li>
+      <li>❌ Almacenar ni transmitir información sensible entre sesiones.</li>
+    </ul>
+  </div>
+
+  <!-- FAQ Spanish -->
+  <div class="about-card">
+    <h2 class="section-title">
+      <span class="section-icon">❓</span> Preguntas Frecuentes
+    </h2>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Como agente puedes ingresar algún sistema?</p>
+      <p class="faq-a">
+        <strong>No.</strong> El agente opera en un entorno aislado y no tiene capacidad de abrir sesiones
+        de navegador, enviar formularios de inicio de sesión ni usar credenciales en ningún sistema externo.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Puede el agente leer mis correos o mensajes?</p>
+      <p class="faq-a">
+        <strong>No.</strong> Solo tiene acceso a los archivos del repositorio y a las herramientas
+        proporcionadas explícitamente durante la sesión.
+      </p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Qué hago si necesito ayuda con un sistema externo?</p>
+      <p class="faq-a">
+        Comparte una <strong>captura de pantalla</strong> o un <strong>registro de errores</strong>
+        en el chat. El agente analizará la información y te indicará los pasos que tú debes
+        seguir manualmente.
+      </p>
+    </div>
+  </div>
+
+  <!-- Security best practices -->
+  <div class="about-card alert-info">
+    <h2 class="section-title">
+      <span class="section-icon">🔒</span> Buenas prácticas de seguridad
+    </h2>
+    <ul class="security-list">
+      <li>Nunca compartas contraseñas, claves de API ni datos personales sensibles en el chat.</li>
+      <li>Usa variables de entorno y secretos de GitHub Actions para manejar credenciales.</li>
+      <li>Revisa el código generado por el agente antes de desplegarlo en producción.</li>
+      <li>Si compartes una credencial por error, cámbiala de inmediato en el servicio correspondiente.</li>
+    </ul>
+    <p class="security-note">
+      ⚠️ <strong>Aviso:</strong> Ningún agente de IA legítimo te pedirá tu contraseña.
+      Si alguien lo hace, es una señal de alerta.
+    </p>
+  </div>
+
+  <!-- Alternatives table -->
+  <div class="about-card">
+    <h2 class="section-title">
+      <span class="section-icon">💡</span> Alternativas seguras
+    </h2>
+    <table class="alt-table">
+      <thead>
+        <tr>
+          <th>Situación</th>
+          <th>Alternativa segura</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Diagnosticar un problema de inicio de sesión</td>
+          <td>Comparte una captura de pantalla o log anonimizado</td>
+        </tr>
+        <tr>
+          <td>Probar una integración con una API</td>
+          <td>Usa un archivo <code>.env</code> local (nunca en el repositorio) y ejecuta las pruebas tú mismo</td>
+        </tr>
+        <tr>
+          <td>Actualizar credenciales de un servicio</td>
+          <td>Cámbialas directamente en la plataforma oficial</td>
+        </tr>
+        <tr>
+          <td>Automatizar despliegues</td>
+          <td>Usa GitHub Actions con secretos cifrados</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

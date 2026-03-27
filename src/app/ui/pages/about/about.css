@@ -1,0 +1,219 @@
+:host {
+  --bg:           #0f0d0b;
+  --surface:      #181410;
+  --surface-2:    #211d18;
+  --border:       #2e2720;
+  --gold:         #c9a55a;
+  --gold-dim:     #a07c38;
+  --gold-glow:    rgba(201,165,90,0.15);
+  --text:         #f0e8db;
+  --text-muted:   #7a6e62;
+  --text-dim:     #4a4038;
+  --red:          #c0392b;
+  --green:        #27ae60;
+  --blue-info:    rgba(90, 145, 201, 0.12);
+  --radius:       10px;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+/* ── PAGE ── */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ── HEADER ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-eyebrow {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ── CARDS ── */
+.about-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+.about-card.alert-info {
+  background: var(--blue-info);
+  border-color: rgba(90, 145, 201, 0.25);
+}
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title.mt {
+  margin-top: 24px;
+}
+
+.section-icon {
+  font-size: 18px;
+}
+
+/* ── CAPABILITY LISTS ── */
+.capability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.capability-list li {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+.capability-list.can-do li {
+  border-left: 3px solid var(--green);
+}
+
+.capability-list.cant-do li {
+  border-left: 3px solid var(--red);
+}
+
+/* ── FAQ ── */
+.faq-item {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.faq-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.faq-q {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+}
+
+.faq-a {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── SECURITY LIST ── */
+.security-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.security-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 6px 0 6px 20px;
+  position: relative;
+}
+
+.security-list li::before {
+  content: '•';
+  position: absolute;
+  left: 6px;
+  color: var(--gold);
+}
+
+.security-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(201, 165, 90, 0.08);
+  border: 1px solid rgba(201, 165, 90, 0.2);
+  line-height: 1.5;
+}
+
+/* ── ALTERNATIVES TABLE ── */
+.alt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.alt-table th {
+  text-align: left;
+  padding: 10px 14px;
+  color: var(--gold);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.alt-table td {
+  padding: 10px 14px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.alt-table tr:last-child td {
+  border-bottom: none;
+}
+
+.alt-table td:first-child {
+  color: var(--text);
+  width: 45%;
+}
+
+.alt-table code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
+  color: var(--gold);
+}
