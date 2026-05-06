@@ -136,12 +136,14 @@ export class Customers implements OnInit {
       });
 
     } else if (this.modalMode() === 'edit' && this.selectedCustomer()) {
+      const raw = this.form.getRawValue();
       const request: UpdateCustomerRequest = {
-        cliNombre:    this.form.get('cliNombre')?.value,
-        cliApellidos: this.form.get('cliApellidos')?.value,
-        cliDireccion: this.form.get('cliDireccion')?.value,
-        cliTelefono:  this.form.get('cliTelefono')?.value,
-        cliEstado:    this.form.get('cliEstado')?.value,
+        cliNombre:        raw.cliNombre,
+        cliApellidos:     raw.cliApellidos,
+        cliTipoDocumento: raw.cliTipoDocumento,
+        cliDireccion:     raw.cliDireccion,
+        cliTelefono:      raw.cliTelefono,
+        cliEstado:        raw.cliEstado,
       };
       this.customerUseCase.update(this.selectedCustomer()!.cliId, request).subscribe({
         next: () => { this.closeModal(); this.loadCustomers(); },

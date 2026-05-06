@@ -195,13 +195,15 @@
           <input formControlName="cliDireccion" placeholder="Calle 10 # 5-20" />
         </div>
 
-        <div class="form-group full">
-          <label>Estado *</label>
-          <select formControlName="cliEstado">
-            <option value="ACTIVO">Activo</option>
-            <option value="INACTIVO">Inactivo</option>
-          </select>
-        </div>
+        @if (modalMode() === 'edit') {
+          <div class="form-group full">
+            <label>Estado *</label>
+            <select formControlName="cliEstado">
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+            </select>
+          </div>
+        }
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
