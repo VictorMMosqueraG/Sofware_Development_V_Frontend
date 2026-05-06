@@ -1,0 +1,203 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestion de</span>
+      <h1 class="header-title">Detalle de Recibos</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">+ Nuevo Detalle</button>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="alert-error">
+      {{ errorMessage() }}
+      <button (click)="errorMessage.set(null)">x</button>
+    </div>
+  }
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Recibo</label>
+      <select (change)="onFilterChange($event)">
+        <option value="">Todos</option>
+        @for (r of recibos; track r.rcNum) {
+          <option [value]="r.rcNum">Recibo #{{ r.rcNum }} - {{ r.rcFecha }}</option>
+        }
+      </select>
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">detalles</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando detalles...</span>
+      </div>
+    }
+
+    @if (!loading() && details.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Recibo</th>
+            <th>Plato</th>
+            <th>Cantidad</th>
+            <th>Precio Unit.</th>
+            <th>Descuento</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (detail of details; track detail.rcdId) {
+            <tr class="table-row">
+              <td class="td-id">{{ detail.rcdId }}</td>
+              <td># {{ detail.rcNum }}</td>
+              <td>{{ getPlatoNombre(detail.plaId) }}</td>
+              <td>{{ detail.rcdCantidad }}</td>
+              <td class="td-money">$ {{ detail.rcdPrecio | number:'1.2-2' }}</td>
+              <td class="td-money">$ {{ detail.rcdDescuento | number:'1.2-2' }}</td>
+              <td class="td-total">$ {{ (detail.rcdCantidad * detail.rcdPrecio - detail.rcdDescuento) | number:'1.2-2' }}</td>
+              <td class="td-actions">
+                <button class="action-btn edit"   (click)="openEdit(detail)"   title="Editar">E</button>
+                <button class="action-btn delete" (click)="openDelete(detail)" title="Eliminar">X</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && details.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">&#x1F4CB;</div>
+        <p>No se encontraron detalles de recibo</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&lsaquo;</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&rsaquo;</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- CREATE / EDIT MODAL -->
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Detalle' : 'Editar Detalle' }}</h2>
+        <button class="modal-close" (click)="closeModal()">x</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">x</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Recibo *</label>
+            <select formControlName="rcNum">
+              <option value="" disabled>Selecciona un recibo</option>
+              @for (r of recibos; track r.rcNum) {
+                <option [value]="r.rcNum">Recibo #{{ r.rcNum }} - {{ r.rcFecha }}</option>
+              }
+            </select>
+            @if (form.get('rcNum')?.invalid && form.get('rcNum')?.touched) {
+              <span class="field-error">Recibo requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Plato *</label>
+            <select formControlName="plaId" (change)="onPlatoChange()">
+              <option value="" disabled>Selecciona un plato</option>
+              @for (p of platos; track p.plaId) {
+                <option [value]="p.plaId">{{ p.plaDescripcion }} - $ {{ p.plaPrecio | number:'1.2-2' }}</option>
+              }
+            </select>
+            @if (form.get('plaId')?.invalid && form.get('plaId')?.touched) {
+              <span class="field-error">Plato requerido</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cantidad *</label>
+            <input type="number" formControlName="rcdCantidad" placeholder="2" />
+            @if (form.get('rcdCantidad')?.invalid && form.get('rcdCantidad')?.touched) {
+              <span class="field-error">Cantidad requerida (min. 1)</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Precio Unitario *</label>
+            <input type="number" step="0.01" formControlName="rcdPrecio" placeholder="25000.00" />
+            @if (form.get('rcdPrecio')?.invalid && form.get('rcdPrecio')?.touched) {
+              <span class="field-error">Precio requerido</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descuento por linea *</label>
+          <input type="number" step="0.01" formControlName="rcdDescuento" placeholder="0.00" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Detalle' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+<!-- DELETE MODAL -->
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Detalle</h2>
+        <button class="modal-close" (click)="closeModal()">x</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">x</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">&#x1F5D1;</div>
+        <p>Estas seguro que deseas eliminar el detalle</p>
+        <strong># {{ selected()?.rcdId }}</strong>?
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
+      </div>
+    </div>
+  </div>
+}

@@ -11,6 +11,10 @@ import { CashReceiptService } from './domain/service/cash-receipt.service';
 import { CashReceiptUseCase } from './domain/usecase/cash-receipt/cash-receipt.usecase';
 import { CashReceiptHttpService } from './infrastructure/driven-adapter/cash-receipt-http.service';
 import { CashReceiptImplUseCase } from './domain/usecase/cash-receipt/cash-receipt-impl.usecase';
+import { CashReceiptDetailService } from './domain/service/cash-receipt-detail.service';
+import { CashReceiptDetailUseCase } from './domain/usecase/cash-receipt-detail/cash-receipt-detail.usecase';
+import { CashReceiptDetailHttpService } from './infrastructure/driven-adapter/cash-receipt-detail-http.service';
+import { CashReceiptDetailImplUseCase } from './domain/usecase/cash-receipt-detail/cash-receipt-detail-impl.usecase';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +24,7 @@ export const appConfig: ApplicationConfig = {
     { provide: CustomerUseCase, useClass: CustomerImplUseCase },
     { provide: CashReceiptService, useClass: CashReceiptHttpService },
     { provide: CashReceiptUseCase, useClass: CashReceiptImplUseCase },
+    { provide: CashReceiptDetailService, useClass: CashReceiptDetailHttpService },
+    { provide: CashReceiptDetailUseCase, useClass: CashReceiptDetailImplUseCase },
   ],
 };
