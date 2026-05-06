@@ -2,16 +2,16 @@
 
   <header class="page-header">
     <div class="header-left">
-      <span class="header-eyebrow">Gestión de</span>
+      <span class="header-eyebrow">Gestion de</span>
       <h1 class="header-title">Recibos de Caja</h1>
     </div>
-    <button class="btn-primary" (click)="openCreate()">＋ Nuevo Recibo</button>
+    <button class="btn-primary" (click)="openCreate()">+ Nuevo Recibo</button>
   </header>
 
   @if (errorMessage()) {
     <div class="alert-error">
-      ⚠️ {{ errorMessage() }}
-      <button (click)="errorMessage.set(null)">✕</button>
+      {{ errorMessage() }}
+      <button (click)="errorMessage.set(null)">x</button>
     </div>
   }
 
@@ -21,7 +21,6 @@
       <select (change)="onFilterChange($event)">
         <option value="">Todos</option>
         <option value="ACTIVO">Activo</option>
-        <option value="INACTIVO">Inactivo</option>
         <option value="ANULADO">Anulado</option>
       </select>
     </div>
@@ -46,11 +45,12 @@
           <tr>
             <th>#</th>
             <th>Fecha</th>
+            <th>Sede</th>
             <th>Cliente</th>
-            <th>Usuario</th>
-            <th>Pedido ID</th>
+            <th>F. Pago</th>
+            <th>Subtotal</th>
+            <th>Desc.</th>
             <th>Total</th>
-            <th>Observación</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -60,22 +60,22 @@
             <tr class="table-row">
               <td class="td-id">{{ receipt.rcNum }}</td>
               <td class="td-date">{{ receipt.rcFecha | date:'dd MMM yyyy' }}</td>
+              <td>{{ getSedeNombre(receipt.sedeId) }}</td>
               <td>{{ receipt.clientName }}</td>
-              <td>{{ receipt.userName }}</td>
-              <td>{{ receipt.pedId }}</td>
+              <td>{{ getFormaPagoNombre(receipt.fpId) }}</td>
+              <td class="td-money">$ {{ receipt.rcSubtotal | number:'1.2-2' }}</td>
+              <td class="td-money">$ {{ receipt.rcDescuento | number:'1.2-2' }}</td>
               <td class="td-total">$ {{ receipt.rcTotal | number:'1.2-2' }}</td>
-              <td class="td-obs">{{ receipt.rcObservacion }}</td>
               <td>
                 <span class="status-badge"
                   [class.active]="receipt.rcEstado === 'ACTIVO'"
-                  [class.inactive]="receipt.rcEstado === 'INACTIVO'"
                   [class.anulado]="receipt.rcEstado === 'ANULADO'">
                   {{ receipt.rcEstado }}
                 </span>
               </td>
               <td class="td-actions">
-                <button class="action-btn edit"   (click)="openEdit(receipt)"   title="Editar">✎</button>
-                <button class="action-btn delete" (click)="openDelete(receipt)" title="Eliminar">✕</button>
+                <button class="action-btn edit"   (click)="openEdit(receipt)"   title="Editar">E</button>
+                <button class="action-btn delete" (click)="openDelete(receipt)" title="Eliminar">X</button>
               </td>
             </tr>
           }
@@ -85,36 +85,36 @@
 
     @if (!loading() && receipts.length === 0) {
       <div class="empty-state">
-        <div class="empty-icon">🧾</div>
+        <div class="empty-icon">&#x1F9FE;</div>
         <p>No se encontraron recibos de caja</p>
       </div>
     }
 
     @if (totalPages > 1) {
       <div class="pagination">
-        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹</button>
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&lsaquo;</button>
         <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
-        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&rsaquo;</button>
       </div>
     }
 
   </div>
 </div>
 
-<!-- ── CREATE / EDIT MODAL ── -->
+<!-- CREATE / EDIT MODAL -->
 @if (modalMode() === 'create' || modalMode() === 'edit') {
   <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
 
       <div class="modal-header">
         <h2>{{ modalMode() === 'create' ? 'Nuevo Recibo' : 'Editar Recibo' }}</h2>
-        <button class="modal-close" (click)="closeModal()">✕</button>
+        <button class="modal-close" (click)="closeModal()">x</button>
       </div>
 
       @if (modalErrorMessage()) {
         <div class="alert-error">
-          ⚠️ {{ modalErrorMessage() }}
-          <button (click)="modalErrorMessage.set(null)">✕</button>
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">x</button>
         </div>
       }
 
@@ -122,12 +122,32 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Usuario ID *</label>
-            <input type="number" formControlName="usuId" placeholder="1" />
+            <label>Sede *</label>
+            <select formControlName="sedeId">
+              <option value="" disabled>Selecciona una sede</option>
+              @for (sede of sedes; track sede.sedeId) {
+                <option [value]="sede.sedeId">{{ sede.sedeNombre }}</option>
+              }
+            </select>
+            @if (form.get('sedeId')?.invalid && form.get('sedeId')?.touched) {
+              <span class="field-error">Sede requerida</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Cajero *</label>
+            <select formControlName="usuId">
+              <option value="" disabled>Selecciona un usuario</option>
+              @for (u of usuarios; track u.usuId) {
+                <option [value]="u.usuId">{{ u.usuNombre || 'Usuario #' + u.usuId }}</option>
+              }
+            </select>
             @if (form.get('usuId')?.invalid && form.get('usuId')?.touched) {
               <span class="field-error">Usuario requerido</span>
             }
           </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-group">
             <label>Fecha *</label>
             <input type="date" formControlName="rcFecha" />
@@ -135,55 +155,94 @@
               <span class="field-error">Fecha requerida</span>
             }
           </div>
-        </div>
-
-        <div class="form-row">
           <div class="form-group">
-            <label>Pedido ID *</label>
-            <input type="number" formControlName="pedId" placeholder="1" />
+            <label>Pedido *</label>
+            <select formControlName="pedId">
+              <option value="" disabled>Selecciona un pedido</option>
+              @for (p of pedidos; track p.pedId) {
+                <option [value]="p.pedId">Pedido #{{ p.pedId }} {{ p.pedMesa ? '- Mesa ' + p.pedMesa : '' }}</option>
+              }
+            </select>
             @if (form.get('pedId')?.invalid && form.get('pedId')?.touched) {
               <span class="field-error">Pedido requerido</span>
             }
           </div>
-          <div class="form-group">
-            <label>Cliente *</label>
-            <select formControlName="cliId">
-              <option value="" disabled>Selecciona un cliente</option>
-              @for (customer of customers; track customer.cliId) {
-                <option [value]="customer.cliId">{{ customer.cliNombre }} {{ customer.cliApellidos }}</option>
-              }
-            </select>
-            @if (form.get('cliId')?.invalid && form.get('cliId')?.touched) {
-              <span class="field-error">Cliente requerido</span>
-            }
-          </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
+            <label>Cliente (vacio = Publico General)</label>
+            <select formControlName="cliId">
+              <option value="">Publico General</option>
+              @for (customer of customers; track customer.cliId) {
+                <option [value]="customer.cliId">{{ customer.cliNombre }} {{ customer.cliApellidos }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Forma de Pago *</label>
+            <select formControlName="fpId">
+              <option value="" disabled>Selecciona forma de pago</option>
+              @for (fp of formasPago; track fp.fpId) {
+                <option [value]="fp.fpId">{{ fp.fpDescripcion }}</option>
+              }
+            </select>
+            @if (form.get('fpId')?.invalid && form.get('fpId')?.touched) {
+              <span class="field-error">Forma de pago requerida</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row form-row-3">
+          <div class="form-group">
+            <label>Subtotal *</label>
+            <input type="number" step="0.01" formControlName="rcSubtotal" placeholder="50000.00" />
+            @if (form.get('rcSubtotal')?.invalid && form.get('rcSubtotal')?.touched) {
+              <span class="field-error">Subtotal requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Descuento *</label>
+            <input type="number" step="0.01" formControlName="rcDescuento" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label>Propina *</label>
+            <input type="number" step="0.01" formControlName="rcPropina" placeholder="0.00" />
+          </div>
+        </div>
+
+        <div class="form-row form-row-3">
+          <div class="form-group">
             <label>Total *</label>
-            <input type="number" formControlName="rcTotal" placeholder="50000.00" />
+            <input type="number" step="0.01" formControlName="rcTotal" placeholder="55000.00" />
             @if (form.get('rcTotal')?.invalid && form.get('rcTotal')?.touched) {
               <span class="field-error">Total requerido</span>
             }
           </div>
           <div class="form-group">
-            <label>Estado *</label>
-            <select formControlName="rcEstado">
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
-              <option value="ANULADO">Anulado</option>
-            </select>
+            <label>Monto Recibido</label>
+            <input type="number" step="0.01" formControlName="rcMontoRec" placeholder="60000.00" />
+          </div>
+          <div class="form-group">
+            <label>Cambio *</label>
+            <input type="number" step="0.01" formControlName="rcCambio" placeholder="5000.00" />
           </div>
         </div>
 
         <div class="form-group full">
-          <label>Observación *</label>
-          <textarea formControlName="rcObservacion" placeholder="Pago en efectivo mesa 1" rows="3"></textarea>
-          @if (form.get('rcObservacion')?.invalid && form.get('rcObservacion')?.touched) {
-            <span class="field-error">Observación requerida (mín. 3 caracteres)</span>
-          }
+          <label>Observacion</label>
+          <input type="text" formControlName="rcObservacion" placeholder="Observaciones..." />
         </div>
+
+        @if (modalMode() === 'edit') {
+          <div class="form-group full">
+            <label>Estado *</label>
+            <select formControlName="rcEstado">
+              <option value="ACTIVO">Activo</option>
+              <option value="ANULADO">Anulado</option>
+            </select>
+          </div>
+        }
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
@@ -197,31 +256,31 @@
   </div>
 }
 
-<!-- ── DELETE MODAL ── -->
+<!-- DELETE MODAL -->
 @if (modalMode() === 'delete') {
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal modal-sm" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>Eliminar Recibo</h2>
-        <button class="modal-close" (click)="closeModal()">✕</button>
+        <button class="modal-close" (click)="closeModal()">x</button>
       </div>
 
       @if (modalErrorMessage()) {
         <div class="alert-error">
-          ⚠️ {{ modalErrorMessage() }}
-          <button (click)="modalErrorMessage.set(null)">✕</button>
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">x</button>
         </div>
       }
 
       <div class="delete-body">
-        <div class="delete-icon">🗑️</div>
-        <p>¿Estás seguro que deseas eliminar el recibo</p>
+        <div class="delete-icon">&#x1F5D1;</div>
+        <p>Estas seguro que deseas eliminar el recibo</p>
         <strong># {{ selected()?.rcNum }}</strong>?
-        <p class="delete-warning">Esta acción no se puede deshacer.</p>
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
-        <button class="btn-danger" (click)="confirmDelete()">Sí, eliminar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
       </div>
     </div>
   </div>

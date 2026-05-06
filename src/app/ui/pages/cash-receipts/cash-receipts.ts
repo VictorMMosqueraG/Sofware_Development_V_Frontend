@@ -1,12 +1,15 @@
-// src/app/ui/pages/cash-receipts/cash-receipts.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CashReceiptUseCase } from '../../../domain/usecase/cash-receipt/cash-receipt.usecase';
 import { CustomerUseCase } from '../../../domain/usecase/customers/customer.usecase';
-import { CashReceipt, CashReceiptSearchQuery, CashReceiptView, CreateCashReceiptRequest, UpdateCashReceiptRequest, Customer } from '../../../domain/models';
+import { LookupHttpService } from '../../../infrastructure/driven-adapter/lookup-http.service';
+import {
+  CashReceipt, CashReceiptSearchQuery, CashReceiptView,
+  CreateCashReceiptRequest, UpdateCashReceiptRequest,
+  Customer, Sede, UserLookup, OrderLookup, FormaPago
+} from '../../../domain/models';
 import { forkJoin, map } from 'rxjs';
-
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
@@ -20,6 +23,10 @@ export class CashReceipts implements OnInit {
 
   receipts:     CashReceiptView[] = [];
   customers:    Customer[] = [];
+  sedes:        Sede[] = [];
+  usuarios:     UserLookup[] = [];
+  pedidos:      OrderLookup[] = [];
+  formasPago:   FormaPago[] = [];
   totalRecords  = 0;
   currentPage   = 1;
   pageSize      = 10;
@@ -37,36 +44,51 @@ export class CashReceipts implements OnInit {
   constructor(
     private readonly cashReceiptUseCase: CashReceiptUseCase,
     private readonly customerUseCase: CustomerUseCase,
+    private readonly lookupService: LookupHttpService,
     private readonly fb: FormBuilder,
   ) {
     this.form = this.fb.group({
+      sedeId:        ['', [Validators.required, Validators.min(1)]],
       usuId:         ['', [Validators.required, Validators.min(1)]],
       rcFecha:       ['', Validators.required],
       pedId:         ['', [Validators.required, Validators.min(1)]],
-      cliId:         ['', [Validators.required, Validators.min(1)]],
+      cliId:         [''],
+      fpId:          ['', [Validators.required, Validators.min(1)]],
+      rcSubtotal:    ['', [Validators.required, Validators.min(0)]],
+      rcDescuento:   [0, [Validators.required, Validators.min(0)]],
+      rcPropina:     [0, [Validators.required, Validators.min(0)]],
       rcTotal:       ['', [Validators.required, Validators.min(0.01)]],
-      rcObservacion: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(360)]],
+      rcMontoRec:    [''],
+      rcCambio:      [0, [Validators.required, Validators.min(0)]],
+      rcObservacion: ['', Validators.maxLength(360)],
       rcEstado:      ['ACTIVO', Validators.required],
     });
   }
 
   ngOnInit(): void {
-    this.loadCustomers();
+    this.loadLookups();
     this.loadReceipts();
   }
 
-  private loadCustomers(): void {
+  private loadLookups(): void {
+    this.lookupService.getSedes().subscribe({
+      next: (res) => this.sedes = res?.results ?? [],
+    });
+    this.lookupService.getUsuarios().subscribe({
+      next: (res) => this.usuarios = res?.results ?? [],
+    });
+    this.lookupService.getPedidos().subscribe({
+      next: (res) => this.pedidos = res?.results ?? [],
+    });
+    this.lookupService.getFormasPago().subscribe({
+      next: (res) => this.formasPago = res?.results ?? [],
+    });
     const query: any = {
       pagination: { page: 1, pageSize: 1000, sort: 'cliId', order: 'asc' as const },
       cliEstado: 'ACTIVO'
     };
     this.customerUseCase.getAll(query).subscribe({
-      next: (res) => {
-        this.customers = res?.results ?? [];
-      },
-      error: (err) => {
-        console.error('Error loading customers:', err);
-      }
+      next: (res) => this.customers = res?.results ?? [],
     });
   }
 
@@ -80,61 +102,46 @@ export class CashReceipts implements OnInit {
       next: (res) => {
         const receiptsData = res?.results ?? [];
         this.totalRecords = res?.total ?? 0;
-
-        // Si no hay datos, mostrar directamente
         if (receiptsData.length === 0) {
           this.receipts = [];
           this.loading.set(false);
           return;
         }
-
         this.enrichReceiptsWithCustomerNames(receiptsData);
       },
-      error: (err) => {
-        console.error('Error loading receipts:', err);
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 
   private enrichReceiptsWithCustomerNames(receipts: CashReceipt[]): void {
-    const uniqueCliIds = [...new Set(receipts.map(r => r.cliId))];
+    const uniqueCliIds = [...new Set(receipts.filter(r => r.cliId != null).map(r => r.cliId as number))];
     const uncachedIds = uniqueCliIds.filter(id => !this.customerCache.has(id));
 
-    // Si todos los clientes están cacheados, mostrar directamente
     if (uncachedIds.length === 0) {
       this.receipts = this.mapReceiptsToView(receipts);
       this.loading.set(false);
       return;
     }
 
-    // Obtener clientes faltantes transformando cada respuesta
     const requests = uncachedIds.map(id =>
       this.customerUseCase.getById(id).pipe(
         map(response => ({
           id,
-          name: response?.results ?
-            `${response.results.cliNombre} ${response.results.cliApellidos}` :
-            `Cliente #${id}`
+          name: response?.results
+            ? `${response.results.cliNombre} ${response.results.cliApellidos}`
+            : `Cliente #${id}`
         }))
       )
     );
 
     forkJoin(requests).subscribe({
       next: (results) => {
-        // Guardar todos los nombres en caché
-        results.forEach(result => {
-          this.customerCache.set(result.id, result.name);
-        });
+        results.forEach(r => this.customerCache.set(r.id, r.name));
         this.receipts = this.mapReceiptsToView(receipts);
         this.loading.set(false);
       },
-      error: (err) => {
-        console.error('Error loading customer names:', err);
-        // Usar fallback y mostrar de todas formas
-        uncachedIds.forEach(id => {
-          this.customerCache.set(id, `Cliente #${id}`);
-        });
+      error: () => {
+        uncachedIds.forEach(id => this.customerCache.set(id, `Cliente #${id}`));
         this.receipts = this.mapReceiptsToView(receipts);
         this.loading.set(false);
       }
@@ -144,19 +151,29 @@ export class CashReceipts implements OnInit {
   private mapReceiptsToView(receipts: CashReceipt[]): CashReceiptView[] {
     return receipts.map(receipt => ({
       ...receipt,
-      clientName: this.customerCache.get(receipt.cliId) || `Cliente #${receipt.cliId}`,
-      userName: `Usuario #${receipt.usuId}`,
+      clientName: receipt.cliId != null
+        ? (this.customerCache.get(receipt.cliId) || `Cliente #${receipt.cliId}`)
+        : 'Publico General',
+      userName: this.usuarios.find(u => u.usuId === receipt.usuId)?.usuNombre || `Usuario #${receipt.usuId}`,
     }));
+  }
+
+  getSedeNombre(id: number): string {
+    return this.sedes.find(s => s.sedeId === id)?.sedeNombre || `Sede #${id}`;
+  }
+
+  getFormaPagoNombre(id: number): string {
+    return this.formasPago.find(f => f.fpId === id)?.fpDescripcion || `FP #${id}`;
   }
 
   onFilterChange(event: Event): void {
     this.filterEstado = (event.target as HTMLSelectElement).value;
-    this.currentPage  = 1;
+    this.currentPage = 1;
     this.loadReceipts();
   }
 
   openCreate(): void {
-    this.form.reset({ rcEstado: 'ACTIVO' });
+    this.form.reset({ rcEstado: 'ACTIVO', rcDescuento: 0, rcPropina: 0, rcCambio: 0 });
     this.selected.set(null);
     this.modalMode.set('create');
   }
@@ -181,17 +198,22 @@ export class CashReceipts implements OnInit {
 
   submitForm(): void {
     if (this.form.invalid) return;
-
     this.modalErrorMessage.set(null);
+
+    const raw = this.form.getRawValue();
+    const request = {
+      ...raw,
+      cliId: raw.cliId ? Number(raw.cliId) : null,
+      rcMontoRec: raw.rcMontoRec ? Number(raw.rcMontoRec) : null,
+    };
+
     if (this.modalMode() === 'create') {
-      const request: CreateCashReceiptRequest = this.form.value;
-      this.cashReceiptUseCase.create(request).subscribe({
+      this.cashReceiptUseCase.create(request as CreateCashReceiptRequest).subscribe({
         next: () => { this.closeModal(); this.loadReceipts(); },
         error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al crear recibo'),
       });
     } else if (this.modalMode() === 'edit' && this.selected()) {
-      const request: UpdateCashReceiptRequest = this.form.value;
-      this.cashReceiptUseCase.update(this.selected()!.rcNum, request).subscribe({
+      this.cashReceiptUseCase.update(this.selected()!.rcNum, request as UpdateCashReceiptRequest).subscribe({
         next: () => { this.closeModal(); this.loadReceipts(); },
         error: (err) => this.modalErrorMessage.set(err?.error?.detail ?? 'Error al actualizar recibo'),
       });
