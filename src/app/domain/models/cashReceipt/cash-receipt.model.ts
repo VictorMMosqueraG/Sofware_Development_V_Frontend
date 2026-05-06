@@ -1,10 +1,19 @@
 export interface CashReceipt {
   rcNum:         number;
+  sedeId:        number;
   usuId:         number;
   rcFecha:       string;
   pedId:         number;
-  cliId:         number;
+  cliId:         number | null;
+  fpId:          number;
+  rcSubtotal:    number;
+  rcDescuento:   number;
+  rcPropina:     number;
   rcTotal:       number;
-  rcObservacion: string;
-  rcEstado:      'ACTIVO' | 'INACTIVO' | 'ANULADO';
+  rcMontoRec:    number | null;
+  rcCambio:      number;
+  rcObservacion: string | null;
+  rcEstado:      'ACTIVO' | 'ANULADO';
+  createdAt?:    string;
+  updatedAt?:    string;
 }

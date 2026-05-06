@@ -8,4 +8,5 @@ export interface CashReceiptSearchQuery {
   rcEstado?: string;
   cliId?:    number;
   usuId?:    number;
+  sedeId?:   number;
 }

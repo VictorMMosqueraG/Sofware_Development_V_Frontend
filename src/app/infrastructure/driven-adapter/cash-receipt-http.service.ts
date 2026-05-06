@@ -65,6 +65,7 @@ export class CashReceiptHttpService extends CashReceiptService {
     if (query.rcEstado) params = params.set('rcEstado', query.rcEstado);
     if (query.cliId)    params = params.set('cliId',    query.cliId);
     if (query.usuId)    params = params.set('usuId',    query.usuId);
+    if (query.sedeId)   params = params.set('sedeId',   query.sedeId);
 
     return params;
   }
