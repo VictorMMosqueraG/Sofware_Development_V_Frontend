@@ -1,0 +1,184 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestión de</span>
+      <h1 class="header-title">Estados</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>＋</span> Nuevo Estado
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange('estEstado', $event)">
+        <option value="">Todos</option>
+        <option value="ACTIVO">Activo</option>
+        <option value="INACTIVO">Inactivo</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tipo Estado (tesId)</label>
+      <input type="number" placeholder="Ej: 1" (change)="onFilterChange('tesId', $event)" />
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">estados</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando estados...</span>
+      </div>
+    }
+
+    @if (!loading() && statuses.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Tipo Estado</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (status of statuses; track status.estId) {
+            <tr class="table-row">
+
+              <td class="td-id">{{ status.estId }}</td>
+
+              <td>{{ status.estDescripcion }}</td>
+
+              <td>{{ status.tesId }}</td>
+
+              <td>
+                <span class="status-badge"
+                  [class.active]="status.estEstado === 'ACTIVO'"
+                  [class.inactive]="status.estEstado === 'INACTIVO'">
+                  {{ status.estEstado }}
+                </span>
+              </td>
+
+              <td class="td-date">{{ status.createdAt | date:'dd MMM yyyy' }}</td>
+
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(status)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(status)" title="Eliminar">✕</button>
+              </td>
+
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && statuses.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <p>No se encontraron estados</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">›</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Estado' : 'Editar Estado' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-group full">
+          <label>Descripción *</label>
+          <input formControlName="estDescripcion" placeholder="Descripción del estado" />
+          @if (form.get('estDescripcion')?.invalid && form.get('estDescripcion')?.touched) {
+            <span class="field-error">Descripción requerida</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo Estado (tesId) *</label>
+            <input type="number" formControlName="tesId" placeholder="1" />
+            @if (form.get('tesId')?.invalid && form.get('tesId')?.touched) {
+              <span class="field-error">Tipo estado requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Estado *</label>
+            <select formControlName="estEstado">
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Estado' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Estado</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>¿Estás seguro que deseas eliminar el estado</p>
+        <strong>{{ selectedStatus()?.estDescripcion }}</strong>?
+        <p class="delete-warning">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
