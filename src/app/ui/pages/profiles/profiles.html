@@ -1,0 +1,162 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestion de</span>
+      <h1 class="header-title">Perfiles</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>+</span> Nuevo Perfil
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange($event)">
+        <option value="">Todos</option>
+        <option value="ACTIVO">Activo</option>
+        <option value="INACTIVO">Inactivo</option>
+      </select>
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">perfiles</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando perfiles...</span>
+      </div>
+    }
+
+    @if (!loading() && items.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.perfId) {
+            <tr class="table-row">
+              <td class="td-id">{{ item.perfId }}</td>
+              <td>{{ item.perfDescripcion }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="item.perfEstado === 'ACTIVO'"
+                  [class.inactive]="item.perfEstado === 'INACTIVO'">
+                  {{ item.perfEstado }}
+                </span>
+              </td>
+              <td>{{ item.createdAt | date:'dd MMM yyyy' }}</td>
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(item)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(item)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && items.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        <p>No se encontraron perfiles</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&#8249;</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&#8250;</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Perfil' : 'Editar Perfil' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-group full">
+          <label>Descripcion *</label>
+          <input formControlName="perfDescripcion" placeholder="Nombre del perfil" />
+          @if (form.get('perfDescripcion')?.invalid && form.get('perfDescripcion')?.touched) {
+            <span class="field-error">Descripcion requerida</span>
+          }
+        </div>
+
+        <div class="form-group full">
+          <label>Estado *</label>
+          <select formControlName="perfEstado">
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Perfil' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Perfil</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>¿Estas seguro que deseas eliminar</p>
+        <strong>{{ selectedItem()?.perfDescripcion }}</strong>
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
