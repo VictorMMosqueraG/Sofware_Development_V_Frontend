@@ -1,6 +1,10 @@
-<div class="app-layout">
-  <app-navbar />
-  <main class="app-content">
-    <router-outlet />
-  </main>
-</div>
+<app-navbar [open]="sidebarOpen()" (toggle)="onToggle()" />
+
+<!-- Mobile overlay -->
+@if (sidebarOpen()) {
+  <div class="mobile-overlay" (click)="onToggle()"></div>
+}
+
+<main class="main" [class.shifted]="sidebarOpen()">
+  <router-outlet />
+</main>

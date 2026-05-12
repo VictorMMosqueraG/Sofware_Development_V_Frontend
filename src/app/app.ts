@@ -10,4 +10,9 @@ import { Navbar } from './ui/components/navbar/navbar';
 })
 export class App {
   protected readonly title = signal('Software_Development_v_Frontend');
+  sidebarOpen = signal(true);
+
+  onToggle(): void {
+    this.sidebarOpen.update(v => !v);
+  }
 }
