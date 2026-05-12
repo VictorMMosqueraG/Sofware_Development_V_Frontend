@@ -2,13 +2,13 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CreateOrderDetailRequest, OrderDetail, OrderDetailSearchQuery, UpdateOrderDetailRequest } from '../../../domain/models';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OrderDetailUseCase } from '../../../domain/usecase/order-details/order-detail.usecase';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
 @Component({
   selector: 'app-order-details',
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './order-details.html',
   styleUrl: './order-details.css',
 })

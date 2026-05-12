@@ -2,13 +2,13 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CreateInventoryLogRequest, InventoryLog, InventoryLogSearchQuery, UpdateInventoryLogRequest } from '../../../domain/models';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InventoryLogUseCase } from '../../../domain/usecase/inventory-logs/inventory-log.usecase';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
 @Component({
   selector: 'app-inventory-logs',
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './inventory-logs.html',
   styleUrl: './inventory-logs.css',
 })

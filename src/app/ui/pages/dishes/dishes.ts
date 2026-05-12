@@ -2,13 +2,13 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CreateDishRequest, Dish, DishSearchQuery, UpdateDishRequest } from '../../../domain/models';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DishUseCase } from '../../../domain/usecase/dishes/dish.usecase';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
 @Component({
   selector: 'app-dishes',
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './dishes.html',
   styleUrl: './dishes.css',
 })

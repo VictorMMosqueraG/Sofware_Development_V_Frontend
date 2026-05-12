@@ -2,13 +2,13 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CreateSupplyRequest, Supply, SupplySearchQuery, UpdateSupplyRequest } from '../../../domain/models';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SupplyUseCase } from '../../../domain/usecase/supplies/supply.usecase';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
 @Component({
   selector: 'app-supplies',
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './supplies.html',
   styleUrl: './supplies.css',
 })
