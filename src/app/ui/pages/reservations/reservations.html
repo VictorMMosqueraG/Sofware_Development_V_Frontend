@@ -1,0 +1,211 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestion de</span>
+      <h1 class="header-title">Reservaciones</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>+</span> Nueva Reservacion
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange('resEstado', $event)">
+        <option value="">Todos</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="CONFIRMADA">Confirmada</option>
+        <option value="CANCELADA">Cancelada</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sede ID</label>
+      <input type="number" placeholder="Sede..." (change)="onFilterChange('sedeId', $event)" />
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">reservaciones</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando reservaciones...</span>
+      </div>
+    }
+
+    @if (!loading() && items.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Telefono</th>
+            <th>Fecha/Hora</th>
+            <th>Personas</th>
+            <th>Mesa</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.resId) {
+            <tr class="table-row">
+              <td class="td-id">{{ item.resId }}</td>
+              <td>{{ item.resNombreCli }}</td>
+              <td>{{ item.resTelefono || '--' }}</td>
+              <td>{{ item.resFechaHora | date:'dd MMM yyyy HH:mm' }}</td>
+              <td>{{ item.resPersonas }}</td>
+              <td>{{ item.mesaId ?? '--' }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="item.resEstado === 'CONFIRMADA'"
+                  [class.inactive]="item.resEstado === 'CANCELADA'"
+                  [style.background]="item.resEstado === 'PENDIENTE' ? 'rgba(201,165,90,0.12)' : ''"
+                  [style.border]="item.resEstado === 'PENDIENTE' ? '1px solid rgba(201,165,90,0.35)' : ''"
+                  [style.color]="item.resEstado === 'PENDIENTE' ? '#c9a55a' : ''">
+                  {{ item.resEstado }}
+                </span>
+              </td>
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(item)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(item)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && items.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📅</div>
+        <p>No se encontraron reservaciones</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&#8249;</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&#8250;</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nueva Reservacion' : 'Editar Reservacion' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre Cliente *</label>
+            <input formControlName="resNombreCli" placeholder="Juan Perez" />
+            @if (form.get('resNombreCli')?.invalid && form.get('resNombreCli')?.touched) {
+              <span class="field-error">Nombre requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input formControlName="resTelefono" placeholder="3001234567" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha y Hora *</label>
+            <input type="datetime-local" formControlName="resFechaHora" />
+          </div>
+          <div class="form-group">
+            <label>Personas *</label>
+            <input type="number" formControlName="resPersonas" placeholder="2" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sede ID *</label>
+            <input type="number" formControlName="sedeId" placeholder="1" />
+          </div>
+          <div class="form-group">
+            <label>Mesa ID</label>
+            <input type="number" formControlName="mesaId" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estado *</label>
+            <select formControlName="resEstado">
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="CONFIRMADA">Confirmada</option>
+              <option value="CANCELADA">Cancelada</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input formControlName="resNota" placeholder="Notas..." />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Reservacion' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Reservacion</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>Estas seguro que deseas eliminar la reservacion de</p>
+        <strong>{{ selectedItem()?.resNombreCli }}</strong>
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer" style="padding: 16px 28px;">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
