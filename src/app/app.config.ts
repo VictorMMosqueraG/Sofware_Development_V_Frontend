@@ -107,6 +107,10 @@ import { ExpenseHeaderService } from './domain/service/expense-header.service';
 import { ExpenseHeaderUseCase } from './domain/usecase/expense-headers/expense-header.usecase';
 import { ExpenseHeaderHttpService } from './infrastructure/driven-adapter/expense-header-http.service';
 import { ExpenseHeaderImplUseCase } from './domain/usecase/expense-headers/expense-header-impl.usecase';
+import { ReportService } from './domain/service/report.service';
+import { ReportUseCase } from './domain/usecase/reports/report.usecase';
+import { ReportHttpService } from './infrastructure/driven-adapter/report-http.service';
+import { ReportImplUseCase } from './domain/usecase/reports/report-impl.usecase';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -164,5 +168,7 @@ export const appConfig: ApplicationConfig = {
     { provide: PqrsUseCase, useClass: PqrsImplUseCase },
     { provide: ExpenseHeaderService, useClass: ExpenseHeaderHttpService },
     { provide: ExpenseHeaderUseCase, useClass: ExpenseHeaderImplUseCase },
+    { provide: ReportService, useClass: ReportHttpService },
+    { provide: ReportUseCase, useClass: ReportImplUseCase },
   ],
 };

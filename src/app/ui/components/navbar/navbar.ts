@@ -81,6 +81,12 @@ export class Navbar {
       ],
     },
     {
+      title: 'Reportes',
+      items: [
+        { label: 'Ventas de Platos', route: '/reports' },
+      ],
+    },
+    {
       title: 'Sistema',
       items: [
         { label: 'Tipos de Estado', route: '/status-types' },

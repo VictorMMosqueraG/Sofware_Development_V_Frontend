@@ -26,3 +26,4 @@ export * from './diningAreas';
 export * from './diningTables';
 export * from './supplyCategories';
 export * from './users';
+export * from './reports';

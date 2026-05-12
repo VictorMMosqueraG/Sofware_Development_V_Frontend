@@ -1,0 +1,270 @@
+<div class="page">
+  <!-- ── HEADER ── -->
+  <div class="page-header">
+    <div>
+      <span class="header-eyebrow">Consultas</span>
+      <h1 class="header-title">Reportes de Ventas</h1>
+    </div>
+  </div>
+
+  <!-- ── ERROR ── -->
+  @if (errorMessage()) {
+    <div class="alert-error">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- ── FILTERS ── -->
+  <form [formGroup]="filterForm" (ngSubmit)="executeSearch()" class="filters-bar">
+    <div class="filter-group">
+      <label>Fecha Inicio</label>
+      <input type="date" formControlName="fechaInicio" />
+    </div>
+    <div class="filter-group">
+      <label>Fecha Fin</label>
+      <input type="date" formControlName="fechaFin" />
+    </div>
+    <div class="filter-group">
+      <label>Mesero</label>
+      <select formControlName="usuId">
+        <option value="">Todos</option>
+        @for (user of users; track user.usuId) {
+          <option [value]="user.usuId">{{ user.usuNombre }} {{ user.usuApellido }}</option>
+        }
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Plato</label>
+      <select formControlName="plaId">
+        <option value="">Todos</option>
+        @for (dish of dishes; track dish.plaId) {
+          <option [value]="dish.plaId">{{ dish.plaDescripcion }}</option>
+        }
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Estado</label>
+      <select formControlName="estId">
+        <option value="">Todos</option>
+        @for (status of statuses; track status.estId) {
+          <option [value]="status.estId">{{ status.estDescripcion }}</option>
+        }
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sede</label>
+      <select formControlName="sedeId">
+        <option value="">Todos</option>
+        @for (branch of branches; track branch.sedeId) {
+          <option [value]="branch.sedeId">{{ branch.sedeNombre }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn-primary" [disabled]="loading()">
+      Consultar
+    </button>
+  </form>
+
+  <!-- ── LOADING ── -->
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <span>Cargando...</span>
+    </div>
+  }
+
+  <!-- ══════════════════════════════ REPORT VIEW ══════════════════════════════ -->
+  @if (viewMode() === 'report' && reportData && !loading()) {
+
+    <!-- ── INDICATORS ── -->
+    <div class="indicators-row">
+      <div class="indicator-card">
+        <span class="indicator-value">{{ reportData.indicadores.totalUnidadesVendidas | number }}</span>
+        <span class="indicator-label">Unidades Vendidas</span>
+      </div>
+      <div class="indicator-card">
+        <span class="indicator-value">{{ reportData.indicadores.totalFacturado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+        <span class="indicator-label">Total Facturado</span>
+      </div>
+      <div class="indicator-card">
+        <span class="indicator-value">{{ reportData.indicadores.promedioVentaDiaria | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+        <span class="indicator-label">Promedio Diario</span>
+      </div>
+      <div class="indicator-card">
+        <span class="indicator-value">{{ reportData.indicadores.totalPedidos | number }}</span>
+        <span class="indicator-label">Total Pedidos</span>
+      </div>
+      <div class="indicator-card highlight">
+        <span class="indicator-value">{{ reportData.indicadores.platoMasVendido || 'N/A' }}</span>
+        <span class="indicator-label">Plato Estrella</span>
+      </div>
+      <div class="indicator-card highlight">
+        <span class="indicator-value">{{ reportData.indicadores.sedeMasVentas || 'N/A' }}</span>
+        <span class="indicator-label">Sede Top</span>
+      </div>
+    </div>
+
+    <!-- ── RANKING TABLE ── -->
+    <div class="section-header">
+      <h2 class="section-title">Top 5 Platos Mas Vendidos</h2>
+      <button class="btn-primary" (click)="viewDetail()" [disabled]="selectedRankingIds.size === 0">
+        Ver Detalle
+      </button>
+    </div>
+
+    <div class="table-card">
+      @if (reportData.ranking.length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">&#x1f4ca;</span>
+          <span>No se encontraron datos para el rango seleccionado</span>
+        </div>
+      } @else {
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>
+                <input type="checkbox"
+                       class="ranking-checkbox"
+                       [checked]="isAllSelected()"
+                       (change)="toggleSelectAll()" />
+              </th>
+              <th>#</th>
+              <th>ID</th>
+              <th>Plato</th>
+              <th>Cantidad</th>
+              <th>Total Facturado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of reportData.ranking; track item.id; let i = $index) {
+              <tr class="table-row">
+                <td>
+                  <input type="checkbox"
+                         class="ranking-checkbox"
+                         [checked]="isSelected(item.id)"
+                         (change)="toggleRankingSelection(item.id)" />
+                </td>
+                <td class="td-rank">{{ i + 1 }}</td>
+                <td class="td-id">{{ item.id }}</td>
+                <td>
+                  <div class="avatar-cell">
+                    <div class="avatar">{{ item.descripcion.charAt(0) }}</div>
+                    <span class="name-main">{{ item.descripcion }}</span>
+                  </div>
+                </td>
+                <td><span class="quantity-badge">{{ item.cantidad | number }}</span></td>
+                <td class="td-money">{{ item.totalFacturado | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <!-- ── CHARTS ── -->
+    @if (reportData.ranking.length > 0) {
+      <div class="charts-grid">
+        <div class="chart-card">
+          <canvas #barChart></canvas>
+        </div>
+        <div class="chart-card">
+          <canvas #pieChart></canvas>
+        </div>
+        <div class="chart-card chart-wide">
+          <canvas #groupedBarChart></canvas>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ══════════════════════════════ DETAIL VIEW ══════════════════════════════ -->
+  @if (viewMode() === 'detail' && !loading()) {
+    <div class="section-header">
+      <button class="btn-secondary" (click)="goBackToReport()">
+        Volver al Reporte
+      </button>
+      <h2 class="section-title">Detalle de Documentos</h2>
+    </div>
+
+    <div class="table-card">
+      @if (detailItems.length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">&#x1f4c4;</span>
+          <span>No se encontraron documentos asociados</span>
+        </div>
+      } @else {
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Documento</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Plato</th>
+              <th>Cant.</th>
+              <th>Total</th>
+              <th>Sede</th>
+              <th>Mesero</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of detailItems; track item.documentoId + item.tipoDocumento) {
+              <tr class="table-row">
+                <td>
+                  <span class="doc-type-badge" [class.pedido]="item.tipoDocumento === 'PEDIDO'"
+                        [class.recibo]="item.tipoDocumento !== 'PEDIDO'">
+                    {{ item.tipoDocumento === 'PEDIDO' ? 'PED' : 'RC' }}
+                  </span>
+                </td>
+                <td class="td-doc">{{ item.documento }}</td>
+                <td class="td-date">{{ item.fecha }}</td>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.platoDescripcion }}</td>
+                <td class="td-center">{{ item.cantidad }}</td>
+                <td class="td-money">{{ item.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+                <td>{{ item.sedeNombre }}</td>
+                <td>{{ item.mesero }}</td>
+                <td>
+                  <button class="action-btn edit" title="Ver documento" (click)="viewDocument(item)">
+                    &#x1f50d;
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+
+  <!-- ══════════════════════════════ DOCUMENT VIEW ══════════════════════════════ -->
+  @if (viewMode() === 'document' && !loading()) {
+    <div class="section-header">
+      <button class="btn-secondary" (click)="goBackToDetail()">
+        Volver al Detalle
+      </button>
+      <h2 class="section-title">
+        {{ documentType === 'PEDIDO' ? 'Pedido Completo' : 'Recibo de Caja Completo' }}
+      </h2>
+    </div>
+
+    <div class="document-card">
+      @if (documentDetail) {
+        <div class="document-grid">
+          @for (prop of getDocumentProperties(); track prop.key) {
+            <div class="document-field">
+              <span class="document-label">{{ prop.label }}</span>
+              <span class="document-value">{{ prop.value }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span class="empty-icon">&#x1f4c4;</span>
+          <span>Documento no encontrado</span>
+        </div>
+      }
+    </div>
+  }
+</div>

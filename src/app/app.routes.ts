@@ -25,6 +25,7 @@ import { InventoryLogs } from './ui/pages/inventory-logs/inventory-logs';
 import { DishIngredients } from './ui/pages/dish-ingredients/dish-ingredients';
 import { PqrsPage } from './ui/pages/pqrs/pqrs';
 import { ExpenseHeaders } from './ui/pages/expense-headers/expense-headers';
+import { Reports } from './ui/pages/reports/reports';
 
 export const routes: Routes = [
   { path: '',                    redirectTo: 'customers', pathMatch: 'full' },
@@ -54,5 +55,6 @@ export const routes: Routes = [
   { path: 'dish-ingredients',   component: DishIngredients },
   { path: 'pqrs',               component: PqrsPage },
   { path: 'expense-headers',    component: ExpenseHeaders },
+  { path: 'reports',             component: Reports },
   { path: '**',                  redirectTo: 'customers'  },
 ];
