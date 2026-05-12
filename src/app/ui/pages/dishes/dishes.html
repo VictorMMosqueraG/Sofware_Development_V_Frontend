@@ -1,0 +1,196 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestion de</span>
+      <h1 class="header-title">Platos</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>+</span> Nuevo Plato
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange('estId', $event)">
+        <option value="">Todos</option>
+        <option value="1">Activo</option>
+        <option value="2">Inactivo</option>
+      </select>
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">platos</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando platos...</span>
+      </div>
+    }
+
+    @if (!loading() && items.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripcion</th>
+            <th>Codigo</th>
+            <th>Precio</th>
+            <th>Costo</th>
+            <th>Categoria</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.plaId) {
+            <tr class="table-row">
+              <td class="td-id">{{ item.plaId }}</td>
+              <td>{{ item.plaDescripcion }}</td>
+              <td>{{ item.plaCodigo || '--' }}</td>
+              <td>{{ item.plaPrecio | number:'1.2-2' }}</td>
+              <td>{{ item.plaCosto !== null ? (item.plaCosto | number:'1.2-2') : '--' }}</td>
+              <td>{{ item.catId }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="item.estId === 1"
+                  [class.inactive]="item.estId !== 1">
+                  {{ item.estId === 1 ? 'ACTIVO' : 'INACTIVO' }}
+                </span>
+              </td>
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(item)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(item)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && items.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🍲</div>
+        <p>No se encontraron platos</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&#8249;</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&#8250;</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Plato' : 'Editar Plato' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-group full">
+          <label>Descripcion *</label>
+          <input formControlName="plaDescripcion" placeholder="Nombre del plato" />
+          @if (form.get('plaDescripcion')?.invalid && form.get('plaDescripcion')?.touched) {
+            <span class="field-error">Descripcion requerida</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoria ID *</label>
+            <input type="number" formControlName="catId" placeholder="1" />
+          </div>
+          <div class="form-group">
+            <label>Codigo</label>
+            <input formControlName="plaCodigo" placeholder="PLA-001" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio *</label>
+            <input type="number" formControlName="plaPrecio" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label>Costo</label>
+            <input type="number" formControlName="plaCosto" placeholder="0.00" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Imagen URL</label>
+            <input formControlName="plaImagen" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label>Estado *</label>
+            <select formControlName="estId">
+              <option [ngValue]="1">Activo</option>
+              <option [ngValue]="2">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Plato' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Plato</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>Estas seguro que deseas eliminar</p>
+        <strong>{{ selectedItem()?.plaDescripcion }}</strong>
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer" style="padding: 16px 28px;">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
