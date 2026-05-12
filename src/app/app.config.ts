@@ -15,6 +15,98 @@ import { CashReceiptDetailService } from './domain/service/cash-receipt-detail.s
 import { CashReceiptDetailUseCase } from './domain/usecase/cash-receipt-detail/cash-receipt-detail.usecase';
 import { CashReceiptDetailHttpService } from './infrastructure/driven-adapter/cash-receipt-detail-http.service';
 import { CashReceiptDetailImplUseCase } from './domain/usecase/cash-receipt-detail/cash-receipt-detail-impl.usecase';
+import { ProfileService } from './domain/service/profile.service';
+import { ProfileUseCase } from './domain/usecase/profiles/profile.usecase';
+import { ProfileHttpService } from './infrastructure/driven-adapter/profile-http.service';
+import { ProfileImplUseCase } from './domain/usecase/profiles/profile-impl.usecase';
+import { PaymentMethodService } from './domain/service/payment-method.service';
+import { PaymentMethodUseCase } from './domain/usecase/paymentMethods/payment-method.usecase';
+import { PaymentMethodHttpService } from './infrastructure/driven-adapter/payment-method-http.service';
+import { PaymentMethodImplUseCase } from './domain/usecase/paymentMethods/payment-method-impl.usecase';
+import { ExpenseConceptService } from './domain/service/expense-concept.service';
+import { ExpenseConceptUseCase } from './domain/usecase/expenseConcepts/expense-concept.usecase';
+import { ExpenseConceptHttpService } from './infrastructure/driven-adapter/expense-concept-http.service';
+import { ExpenseConceptImplUseCase } from './domain/usecase/expenseConcepts/expense-concept-impl.usecase';
+import { PqrsTypeService } from './domain/service/pqrs-type.service';
+import { PqrsTypeUseCase } from './domain/usecase/pqrsTypes/pqrs-type.usecase';
+import { PqrsTypeHttpService } from './infrastructure/driven-adapter/pqrs-type-http.service';
+import { PqrsTypeImplUseCase } from './domain/usecase/pqrsTypes/pqrs-type-impl.usecase';
+import { ConfigurationService } from './domain/service/configuration.service';
+import { ConfigurationUseCase } from './domain/usecase/configurations/configuration.usecase';
+import { ConfigurationHttpService } from './infrastructure/driven-adapter/configuration-http.service';
+import { ConfigurationImplUseCase } from './domain/usecase/configurations/configuration-impl.usecase';
+import { StatusTypeService } from './domain/service/status-type.service';
+import { StatusTypeUseCase } from './domain/usecase/statusTypes/status-type.usecase';
+import { StatusTypeHttpService } from './infrastructure/driven-adapter/status-type-http.service';
+import { StatusTypeImplUseCase } from './domain/usecase/statusTypes/status-type-impl.usecase';
+import { DishCategoryService } from './domain/service/dish-category.service';
+import { DishCategoryUseCase } from './domain/usecase/dishCategories/dish-category.usecase';
+import { DishCategoryHttpService } from './infrastructure/driven-adapter/dish-category-http.service';
+import { DishCategoryImplUseCase } from './domain/usecase/dishCategories/dish-category-impl.usecase';
+import { PresentationService } from './domain/service/presentation.service';
+import { PresentationUseCase } from './domain/usecase/presentations/presentation.usecase';
+import { PresentationHttpService } from './infrastructure/driven-adapter/presentation-http.service';
+import { PresentationImplUseCase } from './domain/usecase/presentations/presentation-impl.usecase';
+import { BranchService } from './domain/service/branch.service';
+import { BranchUseCase } from './domain/usecase/branches/branch.usecase';
+import { BranchHttpService } from './infrastructure/driven-adapter/branch-http.service';
+import { BranchImplUseCase } from './domain/usecase/branches/branch-impl.usecase';
+import { StatusService } from './domain/service/status.service';
+import { StatusUseCase } from './domain/usecase/statuses/status.usecase';
+import { StatusHttpService } from './infrastructure/driven-adapter/status-http.service';
+import { StatusImplUseCase } from './domain/usecase/statuses/status-impl.usecase';
+import { DiningAreaService } from './domain/service/dining-area.service';
+import { DiningAreaUseCase } from './domain/usecase/dining-areas/dining-area.usecase';
+import { DiningAreaHttpService } from './infrastructure/driven-adapter/dining-area-http.service';
+import { DiningAreaImplUseCase } from './domain/usecase/dining-areas/dining-area-impl.usecase';
+import { DiningTableService } from './domain/service/dining-table.service';
+import { DiningTableUseCase } from './domain/usecase/dining-tables/dining-table.usecase';
+import { DiningTableHttpService } from './infrastructure/driven-adapter/dining-table-http.service';
+import { DiningTableImplUseCase } from './domain/usecase/dining-tables/dining-table-impl.usecase';
+import { SupplyCategoryService } from './domain/service/supply-category.service';
+import { SupplyCategoryUseCase } from './domain/usecase/supply-categories/supply-category.usecase';
+import { SupplyCategoryHttpService } from './infrastructure/driven-adapter/supply-category-http.service';
+import { SupplyCategoryImplUseCase } from './domain/usecase/supply-categories/supply-category-impl.usecase';
+import { UserService } from './domain/service/user.service';
+import { UserUseCase } from './domain/usecase/users/user.usecase';
+import { UserHttpService } from './infrastructure/driven-adapter/user-http.service';
+import { UserImplUseCase } from './domain/usecase/users/user-impl.usecase';
+import { DishService } from './domain/service/dish.service';
+import { DishUseCase } from './domain/usecase/dishes/dish.usecase';
+import { DishHttpService } from './infrastructure/driven-adapter/dish-http.service';
+import { DishImplUseCase } from './domain/usecase/dishes/dish-impl.usecase';
+import { OrderService } from './domain/service/order.service';
+import { OrderUseCase } from './domain/usecase/orders/order.usecase';
+import { OrderHttpService } from './infrastructure/driven-adapter/order-http.service';
+import { OrderImplUseCase } from './domain/usecase/orders/order-impl.usecase';
+import { OrderDetailService } from './domain/service/order-detail.service';
+import { OrderDetailUseCase } from './domain/usecase/order-details/order-detail.usecase';
+import { OrderDetailHttpService } from './infrastructure/driven-adapter/order-detail-http.service';
+import { OrderDetailImplUseCase } from './domain/usecase/order-details/order-detail-impl.usecase';
+import { ReservationService } from './domain/service/reservation.service';
+import { ReservationUseCase } from './domain/usecase/reservations/reservation.usecase';
+import { ReservationHttpService } from './infrastructure/driven-adapter/reservation-http.service';
+import { ReservationImplUseCase } from './domain/usecase/reservations/reservation-impl.usecase';
+import { SupplyService } from './domain/service/supply.service';
+import { SupplyUseCase } from './domain/usecase/supplies/supply.usecase';
+import { SupplyHttpService } from './infrastructure/driven-adapter/supply-http.service';
+import { SupplyImplUseCase } from './domain/usecase/supplies/supply-impl.usecase';
+import { InventoryLogService } from './domain/service/inventory-log.service';
+import { InventoryLogUseCase } from './domain/usecase/inventory-logs/inventory-log.usecase';
+import { InventoryLogHttpService } from './infrastructure/driven-adapter/inventory-log-http.service';
+import { InventoryLogImplUseCase } from './domain/usecase/inventory-logs/inventory-log-impl.usecase';
+import { DishIngredientService } from './domain/service/dish-ingredient.service';
+import { DishIngredientUseCase } from './domain/usecase/dish-ingredients/dish-ingredient.usecase';
+import { DishIngredientHttpService } from './infrastructure/driven-adapter/dish-ingredient-http.service';
+import { DishIngredientImplUseCase } from './domain/usecase/dish-ingredients/dish-ingredient-impl.usecase';
+import { PqrsService } from './domain/service/pqrs.service';
+import { PqrsUseCase } from './domain/usecase/pqrs/pqrs.usecase';
+import { PqrsHttpService } from './infrastructure/driven-adapter/pqrs-http.service';
+import { PqrsImplUseCase } from './domain/usecase/pqrs/pqrs-impl.usecase';
+import { ExpenseHeaderService } from './domain/service/expense-header.service';
+import { ExpenseHeaderUseCase } from './domain/usecase/expense-headers/expense-header.usecase';
+import { ExpenseHeaderHttpService } from './infrastructure/driven-adapter/expense-header-http.service';
+import { ExpenseHeaderImplUseCase } from './domain/usecase/expense-headers/expense-header-impl.usecase';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,5 +118,51 @@ export const appConfig: ApplicationConfig = {
     { provide: CashReceiptUseCase, useClass: CashReceiptImplUseCase },
     { provide: CashReceiptDetailService, useClass: CashReceiptDetailHttpService },
     { provide: CashReceiptDetailUseCase, useClass: CashReceiptDetailImplUseCase },
+    { provide: ProfileService, useClass: ProfileHttpService },
+    { provide: ProfileUseCase, useClass: ProfileImplUseCase },
+    { provide: PaymentMethodService, useClass: PaymentMethodHttpService },
+    { provide: PaymentMethodUseCase, useClass: PaymentMethodImplUseCase },
+    { provide: ExpenseConceptService, useClass: ExpenseConceptHttpService },
+    { provide: ExpenseConceptUseCase, useClass: ExpenseConceptImplUseCase },
+    { provide: PqrsTypeService, useClass: PqrsTypeHttpService },
+    { provide: PqrsTypeUseCase, useClass: PqrsTypeImplUseCase },
+    { provide: ConfigurationService, useClass: ConfigurationHttpService },
+    { provide: ConfigurationUseCase, useClass: ConfigurationImplUseCase },
+    { provide: StatusTypeService, useClass: StatusTypeHttpService },
+    { provide: StatusTypeUseCase, useClass: StatusTypeImplUseCase },
+    { provide: DishCategoryService, useClass: DishCategoryHttpService },
+    { provide: DishCategoryUseCase, useClass: DishCategoryImplUseCase },
+    { provide: PresentationService, useClass: PresentationHttpService },
+    { provide: PresentationUseCase, useClass: PresentationImplUseCase },
+    { provide: BranchService, useClass: BranchHttpService },
+    { provide: BranchUseCase, useClass: BranchImplUseCase },
+    { provide: StatusService, useClass: StatusHttpService },
+    { provide: StatusUseCase, useClass: StatusImplUseCase },
+    { provide: DiningAreaService, useClass: DiningAreaHttpService },
+    { provide: DiningAreaUseCase, useClass: DiningAreaImplUseCase },
+    { provide: DiningTableService, useClass: DiningTableHttpService },
+    { provide: DiningTableUseCase, useClass: DiningTableImplUseCase },
+    { provide: SupplyCategoryService, useClass: SupplyCategoryHttpService },
+    { provide: SupplyCategoryUseCase, useClass: SupplyCategoryImplUseCase },
+    { provide: UserService, useClass: UserHttpService },
+    { provide: UserUseCase, useClass: UserImplUseCase },
+    { provide: DishService, useClass: DishHttpService },
+    { provide: DishUseCase, useClass: DishImplUseCase },
+    { provide: OrderService, useClass: OrderHttpService },
+    { provide: OrderUseCase, useClass: OrderImplUseCase },
+    { provide: OrderDetailService, useClass: OrderDetailHttpService },
+    { provide: OrderDetailUseCase, useClass: OrderDetailImplUseCase },
+    { provide: ReservationService, useClass: ReservationHttpService },
+    { provide: ReservationUseCase, useClass: ReservationImplUseCase },
+    { provide: SupplyService, useClass: SupplyHttpService },
+    { provide: SupplyUseCase, useClass: SupplyImplUseCase },
+    { provide: InventoryLogService, useClass: InventoryLogHttpService },
+    { provide: InventoryLogUseCase, useClass: InventoryLogImplUseCase },
+    { provide: DishIngredientService, useClass: DishIngredientHttpService },
+    { provide: DishIngredientUseCase, useClass: DishIngredientImplUseCase },
+    { provide: PqrsService, useClass: PqrsHttpService },
+    { provide: PqrsUseCase, useClass: PqrsImplUseCase },
+    { provide: ExpenseHeaderService, useClass: ExpenseHeaderHttpService },
+    { provide: ExpenseHeaderUseCase, useClass: ExpenseHeaderImplUseCase },
   ],
 };

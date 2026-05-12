@@ -2,11 +2,57 @@ import { Routes } from '@angular/router';
 import { Customers }    from './ui/pages/customers/customers';
 import { CashReceipts } from './ui/pages/cash-receipts/cash-receipts';
 import { CashReceiptDetails } from './ui/pages/cash-receipt-details/cash-receipt-details';
+import { Profiles } from './ui/pages/profiles/profiles';
+import { PaymentMethods } from './ui/pages/payment-methods/payment-methods';
+import { ExpenseConcepts } from './ui/pages/expense-concepts/expense-concepts';
+import { PqrsTypes } from './ui/pages/pqrs-types/pqrs-types';
+import { Configurations } from './ui/pages/configurations/configurations';
+import { StatusTypes } from './ui/pages/status-types/status-types';
+import { DishCategories } from './ui/pages/dish-categories/dish-categories';
+import { Presentations } from './ui/pages/presentations/presentations';
+import { Branches } from './ui/pages/branches/branches';
+import { Statuses } from './ui/pages/statuses/statuses';
+import { DiningAreas } from './ui/pages/dining-areas/dining-areas';
+import { DiningTables } from './ui/pages/dining-tables/dining-tables';
+import { SupplyCategories } from './ui/pages/supply-categories/supply-categories';
+import { Users } from './ui/pages/users/users';
+import { Dishes } from './ui/pages/dishes/dishes';
+import { Orders } from './ui/pages/orders/orders';
+import { OrderDetails } from './ui/pages/order-details/order-details';
+import { Reservations } from './ui/pages/reservations/reservations';
+import { Supplies } from './ui/pages/supplies/supplies';
+import { InventoryLogs } from './ui/pages/inventory-logs/inventory-logs';
+import { DishIngredients } from './ui/pages/dish-ingredients/dish-ingredients';
+import { PqrsPage } from './ui/pages/pqrs/pqrs';
+import { ExpenseHeaders } from './ui/pages/expense-headers/expense-headers';
 
 export const routes: Routes = [
   { path: '',                    redirectTo: 'customers', pathMatch: 'full' },
   { path: 'customers',          component: Customers    },
   { path: 'cash-receipts',      component: CashReceipts },
   { path: 'cash-receipt-details', component: CashReceiptDetails },
+  { path: 'profiles',           component: Profiles },
+  { path: 'payment-methods',    component: PaymentMethods },
+  { path: 'expense-concepts',   component: ExpenseConcepts },
+  { path: 'pqrs-types',         component: PqrsTypes },
+  { path: 'configurations',     component: Configurations },
+  { path: 'status-types',       component: StatusTypes },
+  { path: 'dish-categories',    component: DishCategories },
+  { path: 'presentations',      component: Presentations },
+  { path: 'branches',           component: Branches },
+  { path: 'statuses',           component: Statuses },
+  { path: 'dining-areas',       component: DiningAreas },
+  { path: 'dining-tables',      component: DiningTables },
+  { path: 'supply-categories',  component: SupplyCategories },
+  { path: 'users',              component: Users },
+  { path: 'dishes',             component: Dishes },
+  { path: 'orders',             component: Orders },
+  { path: 'order-details',      component: OrderDetails },
+  { path: 'reservations',       component: Reservations },
+  { path: 'supplies',           component: Supplies },
+  { path: 'inventory-logs',     component: InventoryLogs },
+  { path: 'dish-ingredients',   component: DishIngredients },
+  { path: 'pqrs',               component: PqrsPage },
+  { path: 'expense-headers',    component: ExpenseHeaders },
   { path: '**',                  redirectTo: 'customers'  },
 ];
