@@ -1,0 +1,232 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-eyebrow">Gestion de</span>
+      <h1 class="header-title">Insumos</h1>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>+</span> Nuevo Insumo
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select (change)="onFilterChange('insEstado', $event)">
+        <option value="">Todos</option>
+        <option value="1">Activo</option>
+        <option value="0">Inactivo</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sede ID</label>
+      <input type="number" placeholder="Sede..." (change)="onFilterChange('sedeId', $event)" />
+    </div>
+    <div class="stats-chip">
+      <span class="chip-num">{{ totalRecords }}</span>
+      <span class="chip-label">insumos</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Cargando insumos...</span>
+      </div>
+    }
+
+    @if (!loading() && items.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Codigo</th>
+            <th>Stock</th>
+            <th>Stock Min</th>
+            <th>Precio Compra</th>
+            <th>Vendible</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.insId) {
+            <tr class="table-row">
+              <td class="td-id">{{ item.insId }}</td>
+              <td>{{ item.insNombre }}</td>
+              <td>{{ item.insCodigo || '--' }}</td>
+              <td>{{ item.insStock }}</td>
+              <td>{{ item.insStockMin }}</td>
+              <td>{{ item.insPrecioCompra !== null ? (item.insPrecioCompra | number:'1.2-2') : '--' }}</td>
+              <td>{{ item.insVendible === 1 ? 'Si' : 'No' }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="item.insEstado === 1"
+                  [class.inactive]="item.insEstado === 0">
+                  {{ item.insEstado === 1 ? 'ACTIVO' : 'INACTIVO' }}
+                </span>
+              </td>
+              <td class="td-actions">
+                <button class="action-btn edit" (click)="openEdit(item)" title="Editar">✎</button>
+                <button class="action-btn delete" (click)="openDelete(item)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && items.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <p>No se encontraron insumos</p>
+      </div>
+    }
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">&#8249;</button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">&#8250;</button>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (modalMode() === 'create' || modalMode() === 'edit') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2>{{ modalMode() === 'create' ? 'Nuevo Insumo' : 'Editar Insumo' }}</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+
+        <div class="form-group full">
+          <label>Nombre *</label>
+          <input formControlName="insNombre" placeholder="Nombre del insumo" />
+          @if (form.get('insNombre')?.invalid && form.get('insNombre')?.touched) {
+            <span class="field-error">Nombre requerido</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sede ID *</label>
+            <input type="number" formControlName="sedeId" placeholder="1" />
+          </div>
+          <div class="form-group">
+            <label>Categoria Insumo ID *</label>
+            <input type="number" formControlName="cinsId" placeholder="1" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Presentacion ID *</label>
+            <input type="number" formControlName="presId" placeholder="1" />
+          </div>
+          <div class="form-group">
+            <label>Codigo</label>
+            <input formControlName="insCodigo" placeholder="INS-001" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Codigo Barras</label>
+            <input formControlName="insCodigoBarras" placeholder="7701234567890" />
+          </div>
+          <div class="form-group">
+            <label>Precio Compra</label>
+            <input type="number" formControlName="insPrecioCompra" placeholder="0.00" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock *</label>
+            <input type="number" formControlName="insStock" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Stock Minimo *</label>
+            <input type="number" formControlName="insStockMin" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vendible *</label>
+            <select formControlName="insVendible">
+              <option [ngValue]="1">Si</option>
+              <option [ngValue]="0">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Estado *</label>
+            <select formControlName="insEstado">
+              <option [ngValue]="1">Activo</option>
+              <option [ngValue]="0">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Imagen URL</label>
+          <input formControlName="insImagen" placeholder="https://..." />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ modalMode() === 'create' ? 'Crear Insumo' : 'Guardar Cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (modalMode() === 'delete') {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Insumo</h2>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      @if (modalErrorMessage()) {
+        <div class="alert-error">
+          {{ modalErrorMessage() }}
+          <button (click)="modalErrorMessage.set(null)">✕</button>
+        </div>
+      }
+
+      <div class="delete-body">
+        <div class="delete-icon">🗑️</div>
+        <p>Estas seguro que deseas eliminar</p>
+        <strong>{{ selectedItem()?.insNombre }}</strong>
+        <p class="delete-warning">Esta accion no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer" style="padding: 16px 28px;">
+        <button class="btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Si, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
